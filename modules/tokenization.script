@@ -1,0 +1,249 @@
+﻿//Script GUID:bfa2aa7c-ec24-4950-8181-5c494e43bb46
+//Used for tracking history
+
+//Script GUID:7907bcde-3499-48ec-8047-06ce97c872c6
+//Used for tracking history
+
+#DECLARE CorpusPath string = @@SI_Corpus_Path@@;
+#DECLARE ModelFolder string = @@str_model_folder@@;    //remember to end with a dash, default is "/users/v-zw/ModelsFull/"
+#DECLARE MinNumOfToken string = @@str_min_num_of_token@@;
+#DECLARE MaxNumOfToken string = @@str_max_num_of_token@@;
+
+//models as resources:
+#DECLARE SSModel string = @ModelFolder + "en-sent.bin";
+#DECLARE TKModel string = @ModelFolder + "en-token.bin";
+#DECLARE POSModel string = @ModelFolder + "en-pos-maxent.bin";
+#DECLARE CKModel string = @ModelFolder + "en-chunker.bin";
+#DECLARE PersonModel string = @ModelFolder + "en-ner-person.bin";
+#DECLARE OrgModel string = @ModelFolder + "en-ner-organization.bin";
+#DECLARE LocModel string = @ModelFolder + "en-ner-location.bin";
+#DECLARE DateModel string = @ModelFolder + "en-ner-date.bin";
+#DECLARE MoneyModel string = @ModelFolder + "en-ner-money.bin";
+#DECLARE PercentageModel string = @ModelFolder + "en-ner-percentage.bin";
+#DECLARE TimeModel string = @ModelFolder + "en-ner-time.bin";
+#DECLARE ParseModel string = @ModelFolder + "en-parser-chunking.bin";
+#DECLARE MaltParseModel string = @ModelFolder + "engmalt.linear-1.7.mco";
+
+RESOURCE @SSModel;
+RESOURCE @TKModel;
+RESOURCE @POSModel;
+RESOURCE @CKModel; 
+RESOURCE @PersonModel;
+RESOURCE @OrgModel;
+RESOURCE @LocModel;
+RESOURCE @DateModel;
+RESOURCE @MoneyModel;
+RESOURCE @PercentageModel;
+RESOURCE @TimeModel;
+RESOURCE @ParseModel;
+RESOURCE @MaltParseModel;
+
+#IF(@CorpusPath.EndsWith(".ss") == true)
+Corpus = SSTREAM @CorpusPath;
+#ELSE
+Corpus = EXTRACT Sentence:string
+FROM @CorpusPath
+USING DefaultTextExtractor("-silence");
+#ENDIF
+
+Corpus0 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"0");
+Corpus1 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"1");
+Corpus2 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"2");
+Corpus3 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"3");
+Corpus4 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"4");
+Corpus5 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"5");
+Corpus6 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"6");
+Corpus7 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"7");
+Corpus8 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"8");
+Corpus9 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"9");
+Corpus10 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"10");
+Corpus11 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"11");
+Corpus12 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"12");
+Corpus13 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"13");
+Corpus14 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"14");
+Corpus15 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"15");
+Corpus16 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"16");
+Corpus17 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"17");
+Corpus18 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"18");
+Corpus19 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"19");
+Corpus20 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"20");
+Corpus21 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"21");
+Corpus22 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"22");
+Corpus23 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"23");
+Corpus24 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"24");
+Corpus25 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"25");
+Corpus26 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"26");
+Corpus27 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"27");
+Corpus28 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"28");
+Corpus29 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"29");
+Corpus30 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"30");
+Corpus31 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"31");
+Corpus32 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"32");
+Corpus33 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"33");
+Corpus34 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"34");
+Corpus35 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"35");
+Corpus36 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"36");
+Corpus37 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"37");
+Corpus38 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"38");
+Corpus39 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"39");
+Corpus40 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"40");
+Corpus41 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"41");
+Corpus42 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"42");
+Corpus43 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"43");
+Corpus44 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"44");
+Corpus45 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"45");
+Corpus46 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"46");
+Corpus47 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"47");
+Corpus48 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"48");
+Corpus49 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"49");
+Corpus50 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"50");
+Corpus51 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"51");
+Corpus52 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"52");
+Corpus53 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"53");
+Corpus54 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"54");
+Corpus55 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"55");
+Corpus56 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"56");
+Corpus57 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"57");
+Corpus58 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"58");
+Corpus59 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"59");
+Corpus60 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"60");
+Corpus61 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"61");
+Corpus62 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"62");
+Corpus63 = PROCESS Corpus USING TokenizationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @MinNumOfToken, @MaxNumOfToken,"63");
+
+Corpus = 
+SELECT * FROM Corpus0
+UNION ALL
+SELECT * FROM Corpus1
+UNION ALL
+SELECT * FROM Corpus2
+UNION ALL
+SELECT * FROM Corpus3
+UNION ALL
+SELECT * FROM Corpus4
+UNION ALL
+SELECT * FROM Corpus5
+UNION ALL
+SELECT * FROM Corpus6
+UNION ALL
+SELECT * FROM Corpus7
+UNION ALL
+SELECT * FROM Corpus8
+UNION ALL
+SELECT * FROM Corpus9
+UNION ALL
+SELECT * FROM Corpus10
+UNION ALL
+SELECT * FROM Corpus11
+UNION ALL
+SELECT * FROM Corpus12
+UNION ALL
+SELECT * FROM Corpus13
+UNION ALL
+SELECT * FROM Corpus14
+UNION ALL
+SELECT * FROM Corpus15
+UNION ALL
+SELECT * FROM Corpus16
+UNION ALL
+SELECT * FROM Corpus17
+UNION ALL
+SELECT * FROM Corpus18
+UNION ALL
+SELECT * FROM Corpus19
+UNION ALL
+SELECT * FROM Corpus20
+UNION ALL
+SELECT * FROM Corpus21
+UNION ALL
+SELECT * FROM Corpus22
+UNION ALL
+SELECT * FROM Corpus23
+UNION ALL
+SELECT * FROM Corpus24
+UNION ALL
+SELECT * FROM Corpus25
+UNION ALL
+SELECT * FROM Corpus26
+UNION ALL
+SELECT * FROM Corpus27
+UNION ALL
+SELECT * FROM Corpus28
+UNION ALL
+SELECT * FROM Corpus29
+UNION ALL
+SELECT * FROM Corpus30
+UNION ALL
+SELECT * FROM Corpus31
+UNION ALL
+SELECT * FROM Corpus32
+UNION ALL
+SELECT * FROM Corpus33
+UNION ALL
+SELECT * FROM Corpus34
+UNION ALL
+SELECT * FROM Corpus35
+UNION ALL
+SELECT * FROM Corpus36
+UNION ALL
+SELECT * FROM Corpus37
+UNION ALL
+SELECT * FROM Corpus38
+UNION ALL
+SELECT * FROM Corpus39
+UNION ALL
+SELECT * FROM Corpus40
+UNION ALL
+SELECT * FROM Corpus41
+UNION ALL
+SELECT * FROM Corpus42
+UNION ALL
+SELECT * FROM Corpus43
+UNION ALL
+SELECT * FROM Corpus44
+UNION ALL
+SELECT * FROM Corpus45
+UNION ALL
+SELECT * FROM Corpus46
+UNION ALL
+SELECT * FROM Corpus47
+UNION ALL
+SELECT * FROM Corpus48
+UNION ALL
+SELECT * FROM Corpus49
+UNION ALL
+SELECT * FROM Corpus50
+UNION ALL
+SELECT * FROM Corpus51
+UNION ALL
+SELECT * FROM Corpus52
+UNION ALL
+SELECT * FROM Corpus53
+UNION ALL
+SELECT * FROM Corpus54
+UNION ALL
+SELECT * FROM Corpus55
+UNION ALL
+SELECT * FROM Corpus56
+UNION ALL
+SELECT * FROM Corpus57
+UNION ALL
+SELECT * FROM Corpus58
+UNION ALL
+SELECT * FROM Corpus59
+UNION ALL
+SELECT * FROM Corpus60
+UNION ALL
+SELECT * FROM Corpus61
+UNION ALL
+SELECT * FROM Corpus62
+UNION ALL
+SELECT * FROM Corpus63;
+
+Stat = SELECT COUNT(*) AS Num_Of_Output_Sentences
+FROM Corpus;
+
+OUTPUT Corpus
+TO SSTREAM @@SO_Output_Path@@ CLUSTERED BY Sentence;
+
+OUTPUT Stat TO SSTREAM @@SO_Stat_Path@@;

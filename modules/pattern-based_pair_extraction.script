@@ -1,0 +1,48 @@
+﻿//Script GUID:df2603f3-d5f1-4f74-b2fb-1dfd43f9ff95
+//Used for tracking history
+
+#DECLARE Input_Path string = @@SI_Courpus_Path@@;
+
+#IF(@Input_Path.EndsWith(".ss")==true)
+Sentences = SSTREAM @Input_Path;
+#ELSE
+Sentences = EXTRACT Sentence:string,
+                    TokenStarts:string,
+                    TokenEnds:string,
+                    PatternStart:int,
+                    PatternEnd:int,
+                    POSTags:string
+         FROM @Input_Path
+         USING DefaultTextExtractor("-silence");
+#ENDIF
+
+/*
+    segmentation and filter, based on string at the left/right-hand side of keyword (pattern) 
+        -Kenny's "Rules_IsA_ExtractConceptUsingRegex": noun phrase is defined as ...
+                                                       the expressions consider post modifiers of a concept ...
+        -Kenny's Rule_IsA_NoPureNounPhraseAfterConcept: if there is a noun phrase following the candidate concept, gives it up
+        -Kenny's Rule_IsA_NoVBAfterConcept: if there is a verb/":" following the concept, gives it up (but we revise the rgx and allow ":" here)
+        -Kenny's Rule_IsA_ExtractConceptUsingRegexWithClause: if there is a clause following the concept, gives it up (but we allow ":" to follow np)
+        -Kenny's a rule of high-precision but low-recall is "(target/entity must be at the beginning of a sentence or the beginning of a clause"
+*/
+PairMentions =
+    PROCESS Sentences
+    USING TargetSourceMappingSegmentationProcessor
+    HAVING string.Compare(Left, Right) != 0;
+
+NumOfPairMentions = SELECT COUNT(*) AS Num_Of_Pair_Mentions, 0 AS Partition_ID
+FROM PairMentions;
+    
+Pairs = SELECT DISTINCT Left, Right
+FROM PairMentions;
+
+NumOfPairs = SELECT COUNT(*) AS Num_Of_Pairs, 0 AS Partition_ID
+FROM Pairs;
+
+Stat = SELECT Num_Of_Pair_Mentions, Num_Of_Pairs
+    FROM NumOfPairMentions INNER JOIN NumOfPairs
+    ON NumOfPairMentions.Partition_ID == NumOfPairs.Partition_ID;
+
+OUTPUT Stat TO SSTREAM @@SO_Output_Stat_Path@@;
+
+OUTPUT PairMentions TO SSTREAM @@SO_Output_Path@@ CLUSTERED BY Left, Right;

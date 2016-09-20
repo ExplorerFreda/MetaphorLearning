@@ -1,0 +1,25 @@
+﻿//Script GUID:472f700e-258c-4019-82a3-9babe2372ea7
+//Used for tracking history
+
+Stat0 = SSTREAM @@SI_Input_Path0@@;
+
+Stat1 = SSTREAM @@SI_Input_Path1@@;
+
+Stat =
+    SELECT *
+    FROM Stat0
+    UNION ALL
+    SELECT *
+    FROM Stat1;
+
+Stat =
+    SELECT *,
+           0 AS Partition_ID
+    FROM Stat;
+
+Stat =
+    REDUCE Stat
+    ON Partition_ID
+    USING SumReducer;
+
+OUTPUT Stat TO SSTREAM @@SO_Output_Path@@;

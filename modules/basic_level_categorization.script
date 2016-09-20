@@ -1,0 +1,66 @@
+﻿//Script GUID:07564d0c-37e6-41d6-b1a7-54d2ca8a2a0f
+//Used for tracking history
+
+HearstCoocurrences =
+    EXTRACT Concept : string,
+            Instance : string,
+            Frequency : long 
+    FROM "/users/v-zw/Probase/Isa_Core_201602.tsv"
+    USING DefaultTextExtractor;
+
+Denumerator =
+    SELECT SUM(Frequency) AS N,
+           0 AS Partition_ID
+    FROM HearstCoocurrences;
+
+HearstCoocurrences =
+    SELECT *,
+           0 AS Partition_ID
+    FROM HearstCoocurrences;
+
+PrEC =
+    SELECT Concept,
+           Instance,
+           (double) Frequency / N AS Pr_E_C
+    FROM HearstCoocurrences
+         INNER JOIN
+             Denumerator
+         ON HearstCoocurrences.Partition_ID == Denumerator.Partition_ID;
+PrE =
+    SELECT Instance,
+           SUM(Pr_E_C) AS Pr_E
+    FROM PrEC
+    GROUP BY Instance;
+
+PrC =
+    SELECT Concept,
+           SUM(Pr_E_C) AS Pr_C
+    FROM PrEC
+    GROUP BY Concept;
+
+RepEC =
+    SELECT Concept,
+           Instance,
+           Math.Log(Pr_E_C / Pr_E / Pr_C) + Math.Log(Pr_E_C) AS Rep_E_C
+    FROM PrEC,
+         PrE,
+         PrC
+    WHERE PrEC.Concept == PrC.Concept
+          AND PrEC.Instance == PrE.Instance;
+
+BLC =
+    SELECT Instance,
+           string.Join(";sp;", LIST(Concept + ":sp:" + Rep_E_C.ToString())) AS BLC
+    FROM RepEC
+    GROUP BY Instance;
+
+BLC =
+    PROCESS BLC
+    USING SortProcessor;
+
+OUTPUT BLC
+TO SSTREAM "/users/v-zw/Probase/blc.ss"
+   CLUSTERED BY Instance;
+
+//OUTPUT BLC
+//TO "/users/v-zw/Probase/blc.tsv";

@@ -1,0 +1,240 @@
+﻿//Script GUID:dc283ce7-8416-43ae-8414-2d158d74f264
+//Used for tracking history
+
+Simile =
+    SSTREAM @@Simile_Path@@;
+
+Simile =
+    SELECT Left.ToLower() AS Left,
+           Right.ToLower() AS Right,
+           COUNT( * ) AS Frequency
+    FROM Simile
+    GROUP BY Left,
+             Right;
+
+IsA =
+    SSTREAM @@IsA_Path@@;
+
+IsA =
+    SELECT Left.ToLower() AS Left,
+           Right.ToLower() AS Right,
+           COUNT( * ) AS Frequency
+    FROM IsA
+    GROUP BY Left,
+             Right
+    HAVING Frequency >= 5;
+
+GammaH =
+    EXTRACT Concept : string,
+            Instance : string,
+            Frequency : int
+    FROM "/users/v-zw/Probase/Isa_Core_201602.tsv"
+    USING DefaultTextExtractor;
+
+//clean, build, and extend metaphor database GammaM
+CleanSimileMappings =
+    SELECT Left,
+           Right
+    FROM Simile
+    EXCEPT ALL
+    SELECT Instance,
+           Concept
+    FROM GammaH;
+
+Simile =
+    SELECT Simile.Left,
+           Simile.Right,
+           Frequency
+    FROM Simile
+         INNER JOIN
+             CleanSimileMappings
+         ON Simile.Left == CleanSimileMappings.Left AND
+            Simile.Right == CleanSimileMappings.Right;
+
+MetaphorMappings =
+    SELECT Left,
+           Right
+    FROM IsA
+    EXCEPT ALL
+    SELECT Instance,
+           Concept
+    FROM GammaH;
+
+Metaphor =
+    SELECT IsA.Left,
+           IsA.Right,
+           Frequency
+    FROM IsA
+         INNER JOIN
+             MetaphorMappings
+         ON IsA.Left == MetaphorMappings.Left AND
+            IsA.Right == MetaphorMappings.Right;
+
+GammaM =
+    SELECT Left,
+           Right,
+           Frequency
+    FROM Simile
+    UNION ALL
+    SELECT Left,
+           Right,
+           Frequency
+    FROM Metaphor;
+
+GammaM =
+    SELECT Left,
+           Right,
+           SUM(Frequency) AS Frequency
+    FROM GammaM
+    GROUP BY Left,
+             Right;
+
+Extension =
+    SELECT Concept,
+           Right,
+           Frequency
+    FROM GammaM
+         INNER JOIN
+             GammaH
+         ON Left == Instance;
+
+Extension =
+    SELECT Concept AS Left,
+           Right,
+           SUM(Frequency) AS Frequency
+    FROM Extension
+    GROUP BY Left,
+             Right;
+
+GammaM =
+    SELECT Left,
+           Right,
+           Frequency
+    FROM GammaM
+    UNION ALL
+    SELECT Left,
+           Right,
+           Frequency
+    FROM Extension;
+
+GammaM =
+    SELECT Left,
+           Right,
+           SUM(Frequency) AS Frequency
+    FROM GammaM
+    GROUP BY Left,
+             Right;
+
+//Calculate PrEGivenC
+Concepts =
+    SELECT Concept,
+           SUM(Frequency) AS Frequency
+    FROM GammaH
+    GROUP BY Concept;
+
+PrEGivenC =
+    SELECT Instance,
+           GammaH.Concept,
+           (float) GammaH.Frequency / (float) Concepts.Frequency AS Pr_E_Given_C
+    FROM GammaH
+         INNER JOIN
+             Concepts
+         ON GammaH.Concept == Concepts.Concept;
+
+Test =
+    EXTRACT Concept : string,
+            Instance : string,
+            Head_Of_Concept : string,
+            Label : int
+    FROM "/users/v-zw/CoLing2016/dd_test_type1.tsv"
+    USING DefaultTextExtractor;
+
+Test =
+    SELECT Instance.ToLower() AS Instance,
+           Concept.ToLower() AS Concept,
+           Head_Of_Concept.ToLower() AS Head_Of_Concept,
+           Label
+    FROM Test;
+
+InGammaH =
+    SELECT Test.*
+    FROM Test
+         INNER JOIN
+             GammaH
+         ON Test.Instance == GammaH.Instance
+            AND Test.Head_Of_Concept == GammaH.Concept;
+
+Test =
+    SELECT Test.*
+    FROM Test
+    EXCEPT ALL
+    SELECT InGammaH.*
+    FROM InGammaH;
+
+InGammaM =
+    SELECT Test.*
+    FROM Test
+         INNER JOIN
+             GammaM
+         ON Test.Instance == GammaM.Left
+            AND Test.Head_Of_Concept == GammaM.Right;
+
+Test =
+    SELECT Test.*
+    FROM Test
+    EXCEPT ALL
+    SELECT InGammaM.*
+    FROM InGammaM;
+
+Generalization =
+    SELECT Test.Instance,
+           PrEGivenC.Concept AS H_x,
+           Pr_E_Given_C,
+           Test.Concept,
+           Test.Head_Of_Concept,
+         Label
+    FROM Test
+         LEFT JOIN
+             PrEGivenC
+         ON Test.Instance == PrEGivenC.Instance;
+
+Generalization =
+    SELECT Generalization.Instance,
+           H_x,
+           Pr_E_Given_C * Frequency AS Frequency,
+           Generalization.Concept,
+           Generalization.Head_Of_Concept,
+           Label
+    FROM Generalization
+         INNER JOIN
+             GammaM
+         ON H_x == GammaM.Left AND
+            Head_Of_Concept == GammaM.Right;
+
+Generalization =
+    SELECT Instance,
+           Concept,
+           Head_Of_Concept,
+           Label,
+           (float) SUM(Frequency) AS Prediction
+    FROM Generalization
+    GROUP BY Instance,
+             Concept,
+             Head_Of_Concept,
+             Label;
+
+Test =
+    SELECT InGammaH.*,
+           (float) 0 AS Prediction
+    FROM InGammaH
+    UNION ALL
+    SELECT InGammaM.*,
+           (float) 1 AS Prediction
+    FROM InGammaM
+    UNION ALL
+    SELECT Generalization.*
+    FROM Generalization;
+
+
+OUTPUT Test
+TO "/users/v-zw/CoLing2016/temp.tsv";

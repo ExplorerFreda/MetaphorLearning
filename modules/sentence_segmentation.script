@@ -1,0 +1,93 @@
+﻿//Script GUID:7907bcde-3499-48ec-8047-06ce97c872c6
+//Used for tracking history
+
+#DECLARE IsHtmlEncoded int = @@int_is_html_encoded@@;
+#DECLARE MinNumOfChar int = @@int_min_num_of_char@@;
+#DECLARE MaxNumOfChar int = @@int_max_num_of_char@@;
+#DECLARE LowercaseLetterRatio string = @@str_lowercase_letter_ratio@@;
+
+#DECLARE ModelFolder string = @@str_model_folder@@;    //remember to end with a dash, default is "/users/v-zw/ModelsFull/"
+
+//models as resources:
+#DECLARE SSModel string = @ModelFolder + "en-sent.bin";
+#DECLARE TKModel string = @ModelFolder + "en-token.bin";
+#DECLARE POSModel string = @ModelFolder + "en-pos-maxent.bin";
+#DECLARE CKModel string = @ModelFolder + "en-chunker.bin";
+#DECLARE PersonModel string = @ModelFolder + "en-ner-person.bin";
+#DECLARE OrgModel string = @ModelFolder + "en-ner-organization.bin";
+#DECLARE LocModel string = @ModelFolder + "en-ner-location.bin";
+#DECLARE DateModel string = @ModelFolder + "en-ner-date.bin";
+#DECLARE MoneyModel string = @ModelFolder + "en-ner-money.bin";
+#DECLARE PercentageModel string = @ModelFolder + "en-ner-percentage.bin";
+#DECLARE TimeModel string = @ModelFolder + "en-ner-time.bin";
+#DECLARE ParseModel string = @ModelFolder + "en-parser-chunking.bin";
+#DECLARE MaltParseModel string = @ModelFolder + "engmalt.linear-1.7.mco";
+
+RESOURCE @SSModel;
+RESOURCE @TKModel;
+RESOURCE @POSModel;
+RESOURCE @CKModel; 
+RESOURCE @PersonModel;
+RESOURCE @OrgModel;
+RESOURCE @LocModel;
+RESOURCE @DateModel;
+RESOURCE @MoneyModel;
+RESOURCE @PercentageModel;
+RESOURCE @TimeModel;
+RESOURCE @ParseModel;
+RESOURCE @MaltParseModel;
+
+Corpus =
+    SELECT @@Text_Column@@ AS Text
+    FROM
+    (
+        SSTREAM @@SI_Courpus_Path@@
+    );
+
+#IF(@IsHtmlEncoded != 0)
+Corpus = SELECT WebUtility.HtmlDecode(Text) AS Text
+FROM Corpus;
+#ENDIF
+
+Sentences =
+    PROCESS Corpus
+    PRODUCE Sentence
+    USING SentenceSegmentationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel)
+    HAVING Sentence.Length >= @MinNumOfChar AND Sentence.Length < @MaxNumOfChar;
+
+#IF(@IsHtmlEncoded != 0)
+Sentences = SELECT WebUtility.HtmlDecode(Sentence).Trim() AS Sentence
+FROM Sentences;
+#ENDIF
+
+NumOfRawSentences =
+    SELECT COUNT( * ) AS Num_Of_Raw_Sentences,
+           0 AS Partition_ID
+    FROM Sentences;
+
+#IF(string.Compare(@LowercaseLetterRatio, "0") != 0)
+Sentences =
+    PROCESS Sentences
+    PRODUCE Sentence
+    USING Filterer(@LowercaseLetterRatio);
+#ENDIF
+
+NumOfCleanSentences =
+    SELECT COUNT( * ) AS Num_Of_Clean_Sentences,
+           0 AS Partition_ID
+    FROM Sentences;
+
+Stat =
+    SELECT Num_Of_Raw_Sentences,
+           Num_Of_Clean_Sentences
+    FROM NumOfRawSentences
+         INNER JOIN
+             NumOfCleanSentences
+         ON NumOfRawSentences.Partition_ID == NumOfCleanSentences.Partition_ID;
+
+OUTPUT Sentences
+TO SSTREAM @@SO_Output_Path@@
+   CLUSTERED BY Sentence;
+
+OUTPUT Stat
+TO SSTREAM @@SO_Output_Stat_Path@@;

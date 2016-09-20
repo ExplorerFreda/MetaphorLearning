@@ -1,0 +1,58 @@
+﻿#IF(LOCAL)
+#DECLARE HashDllPath string = @"D:\v-zw\hash\hash\hash\msvcr110.dll";
+#ELSE
+#DECLARE HashDllPath string = @"/users/v-zw/ModelsFull/msvcr110.dll";
+#ENDIF
+
+RESOURCE @HashDllPath;
+
+#IF(LOCAL)
+Corpus = EXTRACT Sentence:string
+                 FROM @"D:\v-zw\metaphor_learning\data\debug\sentences.tsv"
+                 USING DefaultTextExtractor("-silence");
+#ELSE
+Corpus =
+    SSTREAM "/local/Aether/_f/v-zw/fa3fd81f-b6de-4573-9a9c-b748394328a7@@@sentence_segmentation@@@8c466858@@@7-4-2016_02-23-01_PM/SO_Output_Path/SO_Output_Path_eec0205f-eed9-49a6-af00-2ca96eaaa50a.ss";
+#ENDIF
+
+Corpus =
+    PROCESS Corpus
+    PRODUCE Sentence,
+            H0,
+            H1
+    USING HashProcessor("64");
+
+    /* SELECT Math.Abs(Murmur3.UniformHash(Sentence) % 64) AS H0,
+           Math.Abs((Murmur3.UniformHash(Sentence) + Sentence.Length) % 64) AS H1
+    FROM Corpus; */
+
+H0Stat =
+    SELECT H0,
+           COUNT( * ) AS Count0
+    FROM Corpus
+    GROUP BY H0;
+
+H1Stat =
+    SELECT H1,
+           COUNT( * ) AS Count1
+    FROM Corpus
+    GROUP BY H1;
+
+Stat =
+    SELECT H0 AS HashCode,
+           Count0,
+           Count1
+    FROM H0Stat
+         LEFT JOIN
+             H1Stat
+         ON H0Stat.H0 == H1Stat.H1;
+
+#IF(LOCAL)
+OUTPUT Stat
+TO SSTREAM @"D:/v-zw/metaphor_learning/data/debug/clueweb_hash_distribution.ss"
+   CLUSTERED BY HashCode;
+#ELSE
+OUTPUT Stat
+TO SSTREAM "/users/v-zw/Metaphor/clueweb_hash_distribution.ss"
+   CLUSTERED BY HashCode;
+#ENDIF

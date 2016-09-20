@@ -1,0 +1,79 @@
+﻿//Script GUID:c157e590-fec0-40d4-bccc-dfc7c28d2da0
+//Used for tracking history
+
+#DECLARE InputPath string = @@SI_Input_Path@@;
+
+#DECLARE ModelFolder string = @@str_model_folder@@;    //remember to end with a dash, default is "/users/v-zw/ModelsFull/"
+
+//models as resources:
+#DECLARE SSModel string = @ModelFolder + "en-sent.bin";
+#DECLARE TKModel string = @ModelFolder + "en-token.bin";
+#DECLARE POSModel string = @ModelFolder + "en-pos-maxent.bin";
+#DECLARE CKModel string = @ModelFolder + "en-chunker.bin";
+#DECLARE PersonModel string = @ModelFolder + "en-ner-person.bin";
+#DECLARE OrgModel string = @ModelFolder + "en-ner-organization.bin";
+#DECLARE LocModel string = @ModelFolder + "en-ner-location.bin";
+#DECLARE DateModel string = @ModelFolder + "en-ner-date.bin";
+#DECLARE MoneyModel string = @ModelFolder + "en-ner-money.bin";
+#DECLARE PercentageModel string = @ModelFolder + "en-ner-percentage.bin";
+#DECLARE TimeModel string = @ModelFolder + "en-ner-time.bin";
+#DECLARE ParseModel string = @ModelFolder + "en-parser-chunking.bin";
+#DECLARE MaltParseModel string = @ModelFolder + "engmalt.linear-1.7.mco";
+
+RESOURCE @SSModel;
+RESOURCE @TKModel;
+RESOURCE @POSModel;
+RESOURCE @CKModel; 
+RESOURCE @PersonModel;
+RESOURCE @OrgModel;
+RESOURCE @LocModel;
+RESOURCE @DateModel;
+RESOURCE @MoneyModel;
+RESOURCE @PercentageModel;
+RESOURCE @TimeModel;
+RESOURCE @ParseModel;
+RESOURCE @MaltParseModel;
+
+#IF(@InputPath.EndsWith(".ss")==true)
+Sentences =
+    SSTREAM @InputPath;
+#ELSE
+Sentences = EXTRACT Sentence:string
+            FROM @InputPath
+            USING DefaultTextExtractor;
+#ENDIF
+
+/*
+    filter based on sentence-level features
+        -Kenny's "Rule_ISA_CheckEnding"
+        -My rule: lenght <= 200 chars
+*/
+Sentences =
+    SELECT Sentence
+    FROM Sentences
+    WHERE Sentence.EndsWith("?") == false AND
+          Sentence.Length <= 200;
+
+/*
+    segmentation and filter, based on string at the left/right-hand side of keyword
+        -Kenny's "Rules_IsA_ExtractConceptUsingRegex" (noun phrase is defined as ...)
+        -Kenny's "Rules_IsA_ExtractConceptUsingRegex" (the expressions consider post modifiers of a concept)
+        -a rule of high-precision but low-recall is "(target> must be at the beginning of a sentence or the beginning of a clause"
+        -Kenny's "Rule_IsA_NoVBAfterConcept" (we allow ":" follows np)
+        -Kenny's "Rule_IsA_ExtractConceptUsingRegexWithClause" (we allow ":" follows np)
+*/
+PairMentions =
+    PROCESS Sentences
+    USING SegmentationProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel, @@str_pattern@@)
+    HAVING string.Compare(Left, Right) != 0;
+
+Pairs = SELECT DISTINCT Left, Right
+        FROM PairMentions;
+
+NumOfPairs = SELECT COUNT(*) AS Num_Of_Pairs
+             FROM Pairs;
+
+OUTPUT PairMentions
+TO SSTREAM @@SO_Output_Path@@;
+
+OUTPUT NumOfPairs TO SSTREAM @@SO_Output_Stat_Path@@;

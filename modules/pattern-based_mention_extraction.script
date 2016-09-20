@@ -1,0 +1,62 @@
+﻿//Script GUID:ca032710-9d1e-4eed-b9db-b2094ddfb8a9
+//Used for tracking history
+
+#DECLARE Input_Path string = @@SI_Courpus_Path@@;
+
+#DECLARE IsLiteral int = @@int_literal_flag@@;
+#DECLARE Pattern string = @@str_pattern@@;
+
+#IF(@Input_Path.EndsWith(".ss")==true)
+Corpus = SSTREAM @Input_Path;
+#ELSE
+Corpus = EXTRACT Sentence:string,
+                    TokenStarts:string,
+                    TokenEnds:string
+         FROM @Input_Path
+         USING DefaultTextExtractor("-silence");
+#ENDIF
+
+/*
+see <data-driven metaphor recognition and explanation>
+1. string islikea_pattern = @"\b(is|was|has been|be|being) like( (a|an))?\b";
+(simile extraction)
+2. string isa_pattern = @"\b(is|was|has been|be|being)( (a|an))?\b";
+(isa pattern mainly consists of a) isa relation and b) metaphor relation)
+
+see <automatically inferring implicit properties in similes>
+3. string vp_likeas_a_pattern = @"\b(like|as)\b";
+3'. string vp_likeas_a_pattern = @"\b([a-z])+\|(VB|VBD|VBP|VBZ)( ([a-z])+\|RP)? (like|as)\|IN( (a|an)\|DT)?\b";
+3''. string vp_adjadv_likeas_a_pattern = @"\b([a-z])+\|(VB|VBD|VBP|VBZ)( ([a-z])+\|RP)?( ([a-z])+\|(RB|JJ))? (like|as)\|IN( (a|an)\|DT)?\b";
+(3' vs 3'': whether the property is explicit mentioned)
+4. string vp_as_adjadv_as_a_pattern = @"\bas ([a-z])+ as( (a|an))?\b";
+4'. string vp_as_adjadv_as_a_pattern = @"\b(is|was|be|being)\|(VB|VBD|VBP|VBZ) as\|(RB|IN) ([a-z])+\|(RB|JJ) as\|IN( (a|an))?\b";
+4''. string vp_as_adjadv_as_a_pattern = @"\b([a-z])+\|(VB|VBD|VBP|VBZ) as\|(RB|IN) ([a-z])+\|(RB|JJ) as\|IN( (a|an))?\b";
+(4' vs 4'': only BE vs general verb)
+
+see http://www.docin.com/p-525979499.html
+5*. string b2aswhatb2 = @"\b((is|was|are|were|be) )?to( (\w)+){1,4} (as|what)( (\w)+){1,4} ((is|was|are|were|be) )?to\b";
+(A be to B as/what C be to D)
+6*. string aswhat_sothat = @"\b(just )?(as|what)( (\w)+){3,6}, (so|that)\b";
+([just] as/what noun_phrase verb_phrase noun_phrase, so/that noun_phrase verb_phrase noun_phrase)
+7. string as_ifthough = @"\bas (if|though)( (a|an))?\b";
+(as if/though)
+
+* indicates a special segmentation strategy to extract target/source nominal concepts
+' indicates the input sentence must be pos tagged
+*/
+
+#IF(@IsLiteral == 1)
+MatchedSentences =
+    PROCESS Corpus
+    USING LiteralPatternProcessor(@Pattern);
+#ELSE
+MatchedSentences = PROCESS Corpus
+USING TagPatternProcessor(@Pattern);
+#ENDIF
+
+Stat = SELECT COUNT(*) AS Num_Of_Mentions
+FROM MatchedSentences;
+
+OUTPUT MatchedSentences TO SSTREAM @@SO_Output_Path@@ CLUSTERED BY Sentence;
+
+OUTPUT Stat TO SSTREAM @@SO_Stat_Path@@;

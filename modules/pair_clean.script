@@ -1,0 +1,55 @@
+﻿//Script GUID:5b96939a-7506-49c4-85ee-a7b068bba74d
+//Used for tracking history
+
+PairMentions = SSTREAM @@SI_Input_Path@@;
+
+PairMentions = SELECT Left.ToLower() AS Left, LeftStart,
+LeftEnd,
+Right.ToLower() AS Right,
+RightStart,
+RightEnd,
+Tokens
+FROM PairMentions;
+
+Pairs = SELECT Left, Right, COUNT(*) AS Freq
+    FROM PairMentions
+    GROUP BY Left, Right
+HAVING Freq >= 5;
+
+ProbasePairs = EXTRACT Hypernym:string,
+                       Hyponym:string,
+                       Freq:int
+FROM "/users/v-zw/Probase/Isa_Core_201602.tsv"
+USING DefaultTextExtractor;
+
+Pairs = SELECT Left, Right FROM Pairs
+    EXCEPT ALL 
+    SELECT Hyponym, Hypernym
+FROM ProbasePairs;
+
+ProbaseInstances =
+    EXTRACT Instance : string,
+            Freq : int
+    FROM "/users/v-zw/Probase/instance_dict.tsv"
+    USING DefaultTextExtractor;
+
+Pairs = SELECT Left, Right FROM Pairs INNER JOIN 
+ProbaseInstances ON Left == Instance;
+    
+Pairs = SELECT Left, Right FROM Pairs INNER JOIN 
+ProbaseInstances ON Right == Instance;
+
+PairMentions = SELECT PairMentions.* FROM PairMentions INNER JOIN Pairs ON PairMentions.Left == Pairs.Left AND PairMentions.Right == Pairs.Right;
+
+PairMentions = SELECT Left, Right, ScriptFunction.Tokens2Sentence(Tokens) AS Sentence
+FROM PairMentions;
+
+PairMentions = SELECT Left, Right, COUNT(*) AS Freq, Sentence
+    FROM PairMentions
+GROUP BY Left, Right, Sentence;
+
+OUTPUT PairMentions TO SSTREAM @@SO_Output_Path@@ CLUSTERED BY Left, Right;
+
+OUTPUT PairMentions TO @@SO_Output_TSV_Path@@;
+
+OUTPUT Pairs TO @@SO_Pair_Output_Path@@;

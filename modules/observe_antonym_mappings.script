@@ -1,0 +1,114 @@
+﻿//Script GUID:be52e50d-7054-41c8-ac12-2b409a600d89
+//Used for tracking history
+
+IsLikeA =
+    SSTREAM "/local/Aether/_f/v-zw/f3185b04-b12e-4d1f-aab8-6d6a73127351@@@CosmosPathsMerger@@@f0b567da@@@5-26-2016_04-34-56_PM/SO_output_path/SO_output_path_cb7f13e7-2429-44da-ad8c-da4917d5c1e3.ss";
+
+IsLikeA =
+    SELECT Left.ToLower() AS Left,
+           Right.ToLower() AS Right,
+           COUNT( * ) AS Freq
+    FROM IsLikeA
+    GROUP BY Left,
+             Right;
+
+IsA =
+    SSTREAM "/local/Aether/_f/v-zw/f3185b04-b12e-4d1f-aab8-6d6a73127351@@@CosmosPathsMerger@@@bc665284@@@5-26-2016_04-37-51_PM/SO_output_path/SO_output_path_dda5236f-b16b-4c88-8606-5f7139113f55.ss";
+
+IsA =
+    SELECT Left.ToLower() AS Left,
+           Right.ToLower() AS Right,
+           COUNT( * ) AS Freq
+    FROM IsA
+    GROUP BY Left,
+             Right
+    HAVING Freq >= 5;
+
+IsAsAdjAsA =
+    SSTREAM "/local/Aether/_8/v-zw/8fa6fe8a-5ab1-4495-acc7-5e9d39fb92db@@@CosmosPathsMerger@@@ed1a9898@@@5-31-2016_09-11-45_AM/SO_output_path/SO_output_path_cf286d6f-a8d4-47f9-a6d1-27692213a087.ss";
+
+IsAsAdjAsA =
+    SELECT Left.ToLower() AS Left,
+           Right.ToLower() AS Right,
+           COUNT( * ) AS Freq
+    FROM IsAsAdjAsA
+    GROUP BY Left,
+             Right;
+
+Mappings =
+    SELECT Left,
+           Right,
+           Freq
+    FROM IsLikeA
+    UNION ALL
+    SELECT Left,
+           Right,
+           Freq
+    FROM IsA
+    UNION ALL
+    SELECT Left,
+           Right,
+           Freq
+    FROM IsAsAdjAsA;
+
+Mappings =
+    SELECT Left,
+           Right,
+           SUM(Freq) AS Freq
+    FROM Mappings;
+
+Antonym =
+    EXTRACT W0 : string,
+            W1 : string
+    FROM "/users/v-zw/WordNet/antonym_noun_pairs.tsv"
+    USING DefaultTextExtractor;
+
+Vocabulary =
+    SELECT W0 AS W
+    FROM Antonym
+    UNION DISTINCT
+    SELECT W1 AS W
+    FROM Antonym;
+
+Mappings =
+    SELECT Left,
+           Right,
+           Freq
+    FROM Mappings
+         INNER JOIN
+             Vocabulary
+         ON Left == W;
+
+Mappings =
+    SELECT Left,
+           string.Join(";sp;", LIST(Right + ":sp:" + Freq.ToString())) AS Rights
+    FROM Mappings
+    GROUP BY Left;
+
+Mappings =
+    PROCESS Mappings
+    USING SortProcessor;
+
+Antonym =
+    SELECT W0,
+           Rights AS Rights0,
+           W1
+    FROM Antonym
+         INNER JOIN
+             Mappings
+         ON W0 == Mappings.Left;
+
+Antonym =
+    SELECT W0,
+           Rights0,
+           W1,
+           Rights AS Rights1
+    FROM Antonym
+         INNER JOIN
+             Mappings
+         ON
+         W1 == Mappings.Left;
+
+OUTPUT Antonym
+TO SSTREAM "/users/v-zw/Metaphor/antonym_mappings.ss"
+   CLUSTERED BY W0, W1;

@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>1a625752-0ab2-49c6-a715-137fb3b431e9</ProjectGuid>
+    <OutputType>File</OutputType>
+    <AssemblyName>Algebra.xml</AssemblyName>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <Name>modules</Name>
+    <RootNamespace>modules</RootNamespace>
+    <VCSelectionInProjectProperty>&lt;Use Current VC in VC Selector&gt;</VCSelectionInProjectProperty>
+    <CosmosRuntimeVersion>Default</CosmosRuntimeVersion>
+    <ScopePath>%24(SCRIPT_DIR);%24(CLUSTER_ROOT);%24(SCOPE_DIR);%24(PROJECT_DIR)</ScopePath>
+    <InputStreamSearchPath>%24(PROJECT_DIR);%24(SCRIPT_DIR);%24(CLUSTER_ROOT)</InputStreamSearchPath>
+    <OutputStreamPath>%24(PROJECT_DIR)</OutputStreamPath>
+    <VertexDebugSolution>false</VertexDebugSolution>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Script Include="aggregate_statistics.script">
+      <RemoveUselessParameters>False</RemoveUselessParameters>
+      <ScopeOldParameters>SI_Input_Path0=(@\"D:\v-zw\metaphor_learning\data\debug\matched_sentences_stat.ss\"),SI_Input_Path1=(@\"D:\v-zw\metaphor_learning\data\debug\matched_sentences_stat.ss\"),SO_Output_Path=(@\"D:\v-zw\metaphor_learning\data\debug\aggregated_matched_sentences_stat.ss\")</ScopeOldParameters>
+    </Script>
+    <Script Include="basic_level_categorization.script" />
+    <Script Include="dependency_parsing.script">
+      <RemoveUselessParameters>False</RemoveUselessParameters>
+      <ScopeClusterParameters>str_model_folder=(\"/users/v-zw/ModelsFull/\"),SI_Input_Path=(\"/local/Aether/_1/v-zw/1b3108d0-4e91-4c32-9831-0d20a19408c2@@@pattern-based_pair_extraction@@@1f6ebf6e@@@7-21-2016_03-29-35_AM/SO_Output_Path/SO_Output_Path_3663282e-368f-4236-80b5-6987c8da6e26.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/parsed_bing_retro_index_islikea_pairs.ss\"),Clutered_Columns=(Left,Right)</ScopeClusterParameters>
+      <ScopeOldParameters>str_model_folder=(\"/users/v-zw/ModelsFull/\"),SI_Input_Path=(\"/local/Aether/_1/v-zw/1b3108d0-4e91-4c32-9831-0d20a19408c2@@@pattern-based_pair_extraction@@@1f6ebf6e@@@7-21-2016_03-29-35_AM/SO_Output_Path/SO_Output_Path_3663282e-368f-4236-80b5-6987c8da6e26.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/parsed_bing_retro_index_islikea_pairs.ss\"),Clutered_Columns=(Left,Right)</ScopeOldParameters>
+    </Script>
+    <Script Include="head_identification.script">
+      <RemoveUselessParameters>True</RemoveUselessParameters>
+      <ScopeOldParameters>str_considered_columns=(\"Left, Right\"),SI_Input_Path=(@\"D:\v-zw\metaphor_learning\data\debug\pairs.tsv\"),SO_Output_Path=(@\"d:\v-zw\metaphor_learning\data\debug\head_of_pairs.ss\"),Clutered_Columns=(LeftHead,RightHead),SO_Stat_Output_Path=(@\"d:\v-zw\metaphor_learning\data\debug\head_of_pairs_stat.ss\")</ScopeOldParameters>
+      <ScopeClusterParameters>str_considered_columns=(\"Left, Right\"),SI_Input_Path=(\"/users/v-zw/Metaphor/parsed_bing_retro_index_islikea_pairs.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/bing_retro_index_islikea_pairs.ss\"),Clutered_Columns=(LeftHead,RightHead),SO_Stat_Output_Path=(\"/users/v-zw/Metaphor/bing_retro_index_islikea_pairs_stat.ss\")</ScopeClusterParameters>
+    </Script>
+    <Script Include="part_of_speech_tagging.script">
+      <RemoveUselessParameters>False</RemoveUselessParameters>
+      <ScopeClusterParameters>SI_Corpus_Path=(\"/local/Aether/_f/v-zw/fa3fd81f-b6de-4573-9a9c-b748394328a7@@@sentence_segmentation@@@8c466858@@@7-4-2016_02-23-01_PM/SO_Output_Path/SO_Output_Path_eec0205f-eed9-49a6-af00-2ca96eaaa50a.ss\"),str_model_folder=(\"/users/v-zw/ModelsFull/\"),SO_Output_Path=(@\"d:\v-zw\metaphor_learning\data\debug\parsed.ss\"),SO_Stat_Path=(\"/users/v-zw/Metaphor/clueweb_shallow_parsed_stat.ss\")</ScopeClusterParameters>
+      <ScopeOldParameters>SI_Corpus_Path=(\"/local/Aether/_f/v-zw/fa3fd81f-b6de-4573-9a9c-b748394328a7@@@sentence_segmentation@@@8c466858@@@7-4-2016_02-23-01_PM/SO_Output_Path/SO_Output_Path_eec0205f-eed9-49a6-af00-2ca96eaaa50a.ss\"),str_model_folder=(\"/users/v-zw/ModelsFull/\"),SO_Output_Path=(@\"d:\v-zw\metaphor_learning\data\debug\parsed.ss\"),SO_Stat_Path=(\"/users/v-zw/Metaphor/clueweb_shallow_parsed_stat.ss\")</ScopeOldParameters>
+    </Script>
+    <Script Include="metaphor_recognition.script">
+      <RemoveUselessParameters>True</RemoveUselessParameters>
+      <ScopeOldParameters>Simile_Path=(\"/local/Aether/_f/v-zw/f3185b04-b12e-4d1f-aab8-6d6a73127351@@@CosmosPathsMerger@@@f0b567da@@@5-26-2016_04-34-56_PM/SO_output_path/SO_output_path_cb7f13e7-2429-44da-ad8c-da4917d5c1e3.ss\"),IsA_Path=(\"/local/Aether/_f/v-zw/f3185b04-b12e-4d1f-aab8-6d6a73127351@@@CosmosPathsMerger@@@bc665284@@@5-26-2016_04-37-51_PM/SO_output_path/SO_output_path_dda5236f-b16b-4c88-8606-5f7139113f55.ss\")</ScopeOldParameters>
+      <ScopeClusterParameters>Simile_Path=(\"/local/Aether/_f/v-zw/f3185b04-b12e-4d1f-aab8-6d6a73127351@@@CosmosPathsMerger@@@f0b567da@@@5-26-2016_04-34-56_PM/SO_output_path/SO_output_path_cb7f13e7-2429-44da-ad8c-da4917d5c1e3.ss\"),IsA_Path=(\"/local/Aether/_f/v-zw/f3185b04-b12e-4d1f-aab8-6d6a73127351@@@CosmosPathsMerger@@@bc665284@@@5-26-2016_04-37-51_PM/SO_output_path/SO_output_path_dda5236f-b16b-4c88-8606-5f7139113f55.ss\")</ScopeClusterParameters>
+    </Script>
+    <Script Include="mining_hypernym_mapping.script" />
+    <Script Include="observe_antonym_mappings.script" />
+    <Script Include="pair_witness.script">
+      <RemoveUselessParameters>False</RemoveUselessParameters>
+      <ScopeOldParameters>str_order=(\"3\"),SI_seed_mention_path=(\"/local/Aether/_f/v-zw/f3185b04-b12e-4d1f-aab8-6d6a73127351@@@CosmosPathsMerger@@@f0b567da@@@5-26-2016_04-34-56_PM/SO_output_path/SO_output_path_cb7f13e7-2429-44da-ad8c-da4917d5c1e3.ss\"),SI_corpus_path=(\"/local/Aether/_a/v-zw/a7f02cac-20e6-43fc-b8f6-e8c200e048e0@@@sentence_segmentation@@@2f1bb00e@@@5-25-2016_07-36-04_AM/SO_Output_Path/SO_Output_Path_8a0261f8-4328-4ae6-b2c7-cd485c15151a.ss\"),SO_output_path=(\"/users/v-zw/Metaphor/bootstrapping_islikea_seed.ss\")</ScopeOldParameters>
+      <ScopeClusterParameters>str_order=(\"3\"),SI_seed_mention_path=(\"/local/Aether/_f/v-zw/f3185b04-b12e-4d1f-aab8-6d6a73127351@@@CosmosPathsMerger@@@f0b567da@@@5-26-2016_04-34-56_PM/SO_output_path/SO_output_path_cb7f13e7-2429-44da-ad8c-da4917d5c1e3.ss\"),SI_corpus_path=(\"/local/Aether/_a/v-zw/a7f02cac-20e6-43fc-b8f6-e8c200e048e0@@@sentence_segmentation@@@2f1bb00e@@@5-25-2016_07-36-04_AM/SO_Output_Path/SO_Output_Path_8a0261f8-4328-4ae6-b2c7-cd485c15151a.ss\"),SO_output_path=(\"/users/v-zw/Metaphor/bootstrapping_islikea_seed.ss\")</ScopeClusterParameters>
+    </Script>
+    <Script Include="pattern-based_mention_extraction.script">
+      <RemoveUselessParameters>True</RemoveUselessParameters>
+      <ScopeOldParameters>SI_Courpus_Path=(@\"D:\v-zw\metaphor_learning\data\debug\tokenized.tsv\"),int_literal_flag=(1),str_pattern=(@\"\b((is|was|are|were|be) )?to( (\w)+){1,4} (as/what)( (\w)+){1,4} ((is|was|are|were|be) )?to\b\"),SO_Output_Path=(@\"D:\v-zw\metaphor_learning\data\debug\mention.ss\"),SO_Stat_Path=(@\"D:\v-zw\metaphor_learning\data\debug\mention_stat.ss\")</ScopeOldParameters>
+      <ScopeClusterParameters>SI_Courpus_Path=(\"/local/Aether/_4/v-zw/45ebb656-c16d-480f-bd98-59514836630e@@@shallow_parsing@@@18af4dbb@@@7-5-2016_04-31-15_AM/SO_Output_Path/SO_Output_Path_348bea35-ef49-4c3f-b589-aab5813945a0.ss\"),int_literal_flag=(0),str_pattern=(@\"\b(\w)+\|(VB|VBD|VBP|VBZ)( (\w)+\|RP)?( (\w)+\|RB)? (like|as)\|IN( (a|an)\|DT)?\b\"),SO_Output_Path=(\"/users/v-zw/BNC/matched_mentions.ss\"),SO_Stat_Path=(\"/users/v-zw/BNC/matched_mentions_stat.ss\")</ScopeClusterParameters>
+    </Script>
+    <Script Include="pattern-based_pair_extraction.script">
+      <RemoveUselessParameters>True</RemoveUselessParameters>
+      <ScopeOldParameters>SI_Courpus_Path=(@\"D:\v-zw\metaphor_learning\data\debug\keyword_tagged.tsv\"),SO_Output_Stat_Path=(\"d:/v-zw/metaphor_learning/data/debug/toy_pair_stat.ss\"),SO_Output_Path=(\"d:/v-zw/metaphor_learning/data/debug/toy_pair.ss\")</ScopeOldParameters>
+      <ScopeClusterParameters>SI_Courpus_Path=(\"/local/Aether/_c/v-zw/c636c4ea-0b14-45e2-b5f1-bd8c39ec9844@@@part_of_speech_tagging@@@b092d2aa@@@7-18-2016_01-37-21_AM/SO_Output_Path/SO_Output_Path_179160c6-f2a5-4ee3-919a-112490ddbf53.ss\"),SO_Output_Stat_Path=(\"/users/v-zw/Metaphor/bing_retro_index_islike_pair_stat.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/bing_retro_index_islike_pair.ss\")</ScopeClusterParameters>
+    </Script>
+    <Script Include="sentence_segmentation.script">
+      <RemoveUselessParameters>False</RemoveUselessParameters>
+      <ScopeOldParameters>int_is_html_encoded=(1),int_min_num_of_char=(16),int_max_num_of_char=(256),str_lowercase_letter_ratio=(\"0.65\"),str_model_folder=(\"/users/v-zw/ModelsFull/\"),Text_Column=(Content),SI_Courpus_Path=(\"/local/v-zw/ClueWeb/para1.ss\"),SO_Output_Path=(\"/local/v-zw/ClueWeb/sent1.ss\"),SO_Output_Stat_Path=(\"/local/v-zw/ClueWeb/sent1_stat.ss\")</ScopeOldParameters>
+      <ScopeClusterParameters>int_is_html_encoded=(1),int_min_num_of_char=(16),int_max_num_of_char=(256),str_lowercase_letter_ratio=(\"0.65\"),str_model_folder=(\"/users/v-zw/ModelsFull/\"),Text_Column=(Content),SI_Courpus_Path=(\"/local/v-zw/ClueWeb/para1.ss\"),SO_Output_Path=(\"/local/v-zw/ClueWeb/sent1.ss\"),SO_Output_Stat_Path=(\"/local/v-zw/ClueWeb/sent1_stat.ss\")</ScopeClusterParameters>
+    </Script>
+    <Script Include="tokenization.script">
+      <RemoveUselessParameters>True</RemoveUselessParameters>
+      <ScopeOldParameters>SI_Corpus_Path=(@\"D:\v-zw\metaphor_learning\data\debug\sentences.tsv\"),str_model_folder=(\"D:\\v-zw\\opennlpmodels\\\"),str_min_num_of_token=(\"5\"),str_max_num_of_token=(\"60\"),SO_Output_Path=(@\"d:\v-zw\metaphor_learning\data\debug\parsed.ss\"),SO_Stat_Path=(@\"d:\v-zw\metaphor_learning\data\debug\parsed_stat.ss\")</ScopeOldParameters>
+      <ScopeClusterParameters>SI_Corpus_Path=(\"/local/Aether/_4/v-zw/4913fa7a-5263-496f-9ac2-03fbe0540640@@@sentence_segmentation@@@2ac85c48@@@7-15-2016_02-50-34_AM/SO_Output_Path/SO_Output_Path_8ab99a5d-8159-4087-8f76-4b67e93319a8.ss\"),str_model_folder=(\"/users/v-zw/ModelsFull/\"),str_min_num_of_token=(\"5\"),str_max_num_of_token=(\"60\"),SO_Output_Path=(\"/users/v-zw/Metaphor/clueweb_shallow_parsed.ss\"),SO_Stat_Path=(\"/users/v-zw/Metaphor/clueweb_shallow_parsed_stat.ss\")</ScopeClusterParameters>
+    </Script>
+    <Script Include="shell.script" />
+    <Script Include="symbolization.script">
+      <RemoveUselessParameters>True</RemoveUselessParameters>
+      <ScopeOldParameters>int_min_num_of_Pair_mentions=(5),int_vocabulary_option=(1),SI_Input_Path=(\"/local/Aether/_f/v-zw/f3185b04-b12e-4d1f-aab8-6d6a73127351@@@CosmosPathsMerger@@@f0b567da@@@5-26-2016_04-34-56_PM/SO_output_path/SO_output_path_cb7f13e7-2429-44da-ad8c-da4917d5c1e3.ss\"),SO_Stat_Path=(\"/users/v-zw/Metaphor/clueweb_simile_pair_mentions_in_probase_domain_stat.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/clueweb_simile_pair_mentions_in_probase_domain.tsv\")</ScopeOldParameters>
+      <ScopeClusterParameters>int_min_num_of_Pair_mentions=(5),int_vocabulary_option=(1),SI_Input_Path=(\"/local/Aether/_f/v-zw/f3185b04-b12e-4d1f-aab8-6d6a73127351@@@CosmosPathsMerger@@@f0b567da@@@5-26-2016_04-34-56_PM/SO_output_path/SO_output_path_cb7f13e7-2429-44da-ad8c-da4917d5c1e3.ss\"),SO_Stat_Path=(\"/users/v-zw/Metaphor/clueweb_simile_pair_mentions_in_probase_domain_stat.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/clueweb_simile_pair_mentions_in_probase_domain.tsv\")</ScopeClusterParameters>
+    </Script>
+    <ScriptCode Include="aggregate_statistics.script.cs">
+      <DependentUpon>aggregate_statistics.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="basic_level_categorization.script.cs">
+      <DependentUpon>basic_level_categorization.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="dependency_parsing.script.cs">
+      <DependentUpon>dependency_parsing.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="head_identification.script.cs">
+      <DependentUpon>head_identification.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="part_of_speech_tagging.script.cs">
+      <DependentUpon>part_of_speech_tagging.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="metaphor_recognition.script.cs">
+      <DependentUpon>metaphor_recognition.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="mining_hypernym_mapping.script.cs">
+      <DependentUpon>mining_hypernym_mapping.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="observe_antonym_mappings.script.cs">
+      <DependentUpon>observe_antonym_mappings.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="pair_witness.script.cs">
+      <DependentUpon>pair_witness.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="pattern-based_mention_extraction.script.cs">
+      <DependentUpon>pattern-based_mention_extraction.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="pattern-based_pair_extraction.script.cs">
+      <DependentUpon>pattern-based_pair_extraction.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="sentence_segmentation.script.cs">
+      <DependentUpon>sentence_segmentation.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="tokenization.script.cs">
+      <DependentUpon>tokenization.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="shell.script.cs">
+      <DependentUpon>shell.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="symbolization.script.cs">
+      <DependentUpon>symbolization.script</DependentUpon>
+    </ScriptCode>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="IKVM.AWT.WinForms">
+      <Name>IKVM.AWT.WinForms</Name>
+      <AssemblyName>IKVM.AWT.WinForms.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.AWT.WinForms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Beans">
+      <Name>IKVM.OpenJDK.Beans</Name>
+      <AssemblyName>IKVM.OpenJDK.Beans.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Beans.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Charsets">
+      <Name>IKVM.OpenJDK.Charsets</Name>
+      <AssemblyName>IKVM.OpenJDK.Charsets.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Charsets.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Corba">
+      <Name>IKVM.OpenJDK.Corba</Name>
+      <AssemblyName>IKVM.OpenJDK.Corba.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Corba.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Core">
+      <Name>IKVM.OpenJDK.Core</Name>
+      <AssemblyName>IKVM.OpenJDK.Core.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Jdbc">
+      <Name>IKVM.OpenJDK.Jdbc</Name>
+      <AssemblyName>IKVM.OpenJDK.Jdbc.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Jdbc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Management">
+      <Name>IKVM.OpenJDK.Management</Name>
+      <AssemblyName>IKVM.OpenJDK.Management.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Management.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Media">
+      <Name>IKVM.OpenJDK.Media</Name>
+      <AssemblyName>IKVM.OpenJDK.Media.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Media.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Misc">
+      <Name>IKVM.OpenJDK.Misc</Name>
+      <AssemblyName>IKVM.OpenJDK.Misc.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Misc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Naming">
+      <Name>IKVM.OpenJDK.Naming</Name>
+      <AssemblyName>IKVM.OpenJDK.Naming.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Naming.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Remoting">
+      <Name>IKVM.OpenJDK.Remoting</Name>
+      <AssemblyName>IKVM.OpenJDK.Remoting.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Remoting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Security">
+      <Name>IKVM.OpenJDK.Security</Name>
+      <AssemblyName>IKVM.OpenJDK.Security.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.SwingAWT">
+      <Name>IKVM.OpenJDK.SwingAWT</Name>
+      <AssemblyName>IKVM.OpenJDK.SwingAWT.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.SwingAWT.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Text">
+      <Name>IKVM.OpenJDK.Text</Name>
+      <AssemblyName>IKVM.OpenJDK.Text.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Text.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Tools">
+      <Name>IKVM.OpenJDK.Tools</Name>
+      <AssemblyName>IKVM.OpenJDK.Tools.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Tools.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.Util">
+      <Name>IKVM.OpenJDK.Util</Name>
+      <AssemblyName>IKVM.OpenJDK.Util.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.Util.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.API">
+      <Name>IKVM.OpenJDK.XML.API</Name>
+      <AssemblyName>IKVM.OpenJDK.XML.API.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.XML.API.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Bind">
+      <Name>IKVM.OpenJDK.XML.Bind</Name>
+      <AssemblyName>IKVM.OpenJDK.XML.Bind.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.XML.Bind.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Crypto">
+      <Name>IKVM.OpenJDK.XML.Crypto</Name>
+      <AssemblyName>IKVM.OpenJDK.XML.Crypto.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.XML.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Parse">
+      <Name>IKVM.OpenJDK.XML.Parse</Name>
+      <AssemblyName>IKVM.OpenJDK.XML.Parse.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.XML.Parse.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Transform">
+      <Name>IKVM.OpenJDK.XML.Transform</Name>
+      <AssemblyName>IKVM.OpenJDK.XML.Transform.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.XML.Transform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.WebServices">
+      <Name>IKVM.OpenJDK.XML.WebServices</Name>
+      <AssemblyName>IKVM.OpenJDK.XML.WebServices.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.XML.WebServices.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.XPath">
+      <Name>IKVM.OpenJDK.XML.XPath</Name>
+      <AssemblyName>IKVM.OpenJDK.XML.XPath.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.OpenJDK.XML.XPath.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.Reflection">
+      <Name>IKVM.Reflection</Name>
+      <AssemblyName>IKVM.Reflection.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.Reflection.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.Runtime">
+      <Name>IKVM.Runtime</Name>
+      <AssemblyName>IKVM.Runtime.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="IKVM.Runtime.JNI">
+      <Name>IKVM.Runtime.JNI</Name>
+      <AssemblyName>IKVM.Runtime.JNI.dll</AssemblyName>
+      <HintPath>..\..\..\ikvm-7.2.4630.5\ikvm-7.2.4630.5\bin\IKVM.Runtime.JNI.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <Name>Newtonsoft.Json</Name>
+      <AssemblyName>Newtonsoft.Json.dll</AssemblyName>
+      <HintPath>..\..\..\Json50r6\Bin\Net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OpenNLPInterface">
+      <Name>OpenNLPInterface</Name>
+      <AssemblyName>OpenNLPInterface.dll</AssemblyName>
+      <HintPath>..\NLPTech\bin\Release\OpenNLPInterface.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="StringNormalization">
+      <Name>StringNormalization</Name>
+      <AssemblyName>StringNormalization.dll</AssemblyName>
+      <HintPath>..\..\..\dlls\StringNormalization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(AppData)\Microsoft\ScopeStudio\MsBuild\1.0\Scope.targets" />
+</Project>

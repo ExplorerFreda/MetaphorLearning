@@ -1,0 +1,46 @@
+﻿//Script GUID:03305ec8-169b-4244-8312-bd8c02a52945
+//Used for tracking history
+
+#DECLARE ModelFolder string = @@str_model_folder@@;    //remember to end with a dash, default is "/users/v-zw/ModelsFull/"
+
+//models as resources:
+#DECLARE SSModel string = @ModelFolder + "en-sent.bin";
+#DECLARE TKModel string = @ModelFolder + "en-token.bin";
+#DECLARE POSModel string = @ModelFolder + "en-pos-maxent.bin";
+#DECLARE CKModel string = @ModelFolder + "en-chunker.bin";
+#DECLARE PersonModel string = @ModelFolder + "en-ner-person.bin";
+#DECLARE OrgModel string = @ModelFolder + "en-ner-organization.bin";
+#DECLARE LocModel string = @ModelFolder + "en-ner-location.bin";
+#DECLARE DateModel string = @ModelFolder + "en-ner-date.bin";
+#DECLARE MoneyModel string = @ModelFolder + "en-ner-money.bin";
+#DECLARE PercentageModel string = @ModelFolder + "en-ner-percentage.bin";
+#DECLARE TimeModel string = @ModelFolder + "en-ner-time.bin";
+#DECLARE ParseModel string = @ModelFolder + "en-parser-chunking.bin";
+#DECLARE MaltParseModel string = @ModelFolder + "engmalt.linear-1.7.mco";
+
+RESOURCE @SSModel;
+RESOURCE @TKModel;
+RESOURCE @POSModel;
+RESOURCE @CKModel; 
+RESOURCE @PersonModel;
+RESOURCE @OrgModel;
+RESOURCE @LocModel;
+RESOURCE @DateModel;
+RESOURCE @MoneyModel;
+RESOURCE @PercentageModel;
+RESOURCE @TimeModel;
+RESOURCE @ParseModel;
+RESOURCE @MaltParseModel;
+
+
+
+Corpus =
+    SSTREAM @@SI_Input_Path@@;
+
+Corpus =
+    PROCESS Corpus
+    USING ParsingProcessor(@SSModel, @TKModel, @POSModel, @CKModel, @PersonModel, @OrgModel, @LocModel, @DateModel, @MoneyModel, @PercentageModel, @TimeModel, @ParseModel, @MaltParseModel);
+
+OUTPUT Corpus
+TO SSTREAM @@SO_Output_Path@@
+   CLUSTERED BY @@Clutered_Columns@@;

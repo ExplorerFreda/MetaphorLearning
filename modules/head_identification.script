@@ -1,0 +1,41 @@
+﻿//Script GUID:e4594714-50b8-47f5-b879-972515731592
+//Used for tracking history
+
+#DECLARE ConsideredColumns string = @@str_considered_columns@@;
+
+#IF(LOCAL)
+Corpus = EXTRACT Left:string,
+LeftStart:int,
+LeftEnd:int,
+Right:string,
+RightStart:int,
+RightEnd:int,
+Sentence:string,
+TokenStarts:string,
+TokenEnds:string,
+PatternStart:int,
+PatternEnd:int,
+POSTags:string,
+Heads:string,
+Relations:string
+FROM @@SI_Input_Path@@
+USING DefaultTextExtractor("silence");
+#ELSE
+Corpus =
+    SSTREAM @@SI_Input_Path@@;
+#ENDIF
+
+Corpus =
+    PROCESS Corpus
+    USING HeadIdentifierProcessor(@ConsideredColumns);
+
+NbRecord =
+    SELECT COUNT( * ) AS Num_Record
+    FROM Corpus;
+
+OUTPUT Corpus
+TO SSTREAM @@SO_Output_Path@@
+   CLUSTERED BY @@Clutered_Columns@@;
+
+OUTPUT NbRecord
+TO SSTREAM @@SO_Stat_Output_Path@@;
