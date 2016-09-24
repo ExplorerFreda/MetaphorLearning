@@ -19,7 +19,7 @@ POSTags:string,
 Heads:string,
 Relations:string
 FROM @@SI_Input_Path@@
-USING DefaultTextExtractor("silence");
+USING DefaultTextExtractor("-silence");
 #ELSE
 Corpus =
     SSTREAM @@SI_Input_Path@@;

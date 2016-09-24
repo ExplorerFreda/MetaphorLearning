@@ -51,13 +51,16 @@ public class TargetSourceMappingSegmentationProcessor : Processor
     {
         string np = @"(DT ){0,1}(((RB|JJ|OF|OF DT|JJR|JJS|RBR|RBS|CD|NN|NNS|NNP|NNPS|VBG|VBN|,|CC) ){0,}(NN|NNS|NNP|NNPS)( CD)?)";
         
-        Regex left_np_rg = new Regex(@"(?<=(^|IN |, ))\b" + np + @"$");
+        //rule 2 (v0.1)
+        //Regex left_np_rg = new Regex(@"(?<=(^|IN |, ))\b" + np + @"$");
+        Regex left_np_rg = new Regex(@"\b" + np + @"$");
         Regex right_np_rg = new Regex(@"^" + np + @"\b" + @"(( (, ){0,1}((RB |JJR ){0,}(IN |TO |TO VB )|(RB |JJR ){0,}(IN |TO VB ){1,2}|(RB |RBR ){0,}(VBG |VBN |IN |TO |TO VB )(IN |TO ){0,2})" + np + @"){0,}(?=( \.){0,2}$))?");
 
         //followed by noun phrase
         Regex np_rg = new Regex(@"^ " + np + @"\b");
         //followed by verb phrase
-        Regex vb_rg = new Regex(@"^ (VBZ|VB|VBD|VBT)\b");
+        //rule 3 (v0.6)
+        Regex vb_rg = new Regex(@"^ (VBZ|VB|VBD|VBP)\b");
         //followed by clause:
         Regex clause_rg = new Regex(@"^ (, ){0,1}(:|WDT|WP|WRB|CC VBZ|, CC VBZ)");
 
@@ -116,6 +119,7 @@ public class TargetSourceMappingSegmentationProcessor : Processor
             }
 
             //Rule_IsA_NoVBAfterConcept
+            //rule 3 (v0.6)
             if (vb_rg.IsMatch(suffix.Substring(suffix_match.Index + suffix_match.Length, suffix.Length - (suffix_match.Index + suffix_match.Length))) == true)
             {
                 continue;
@@ -145,9 +149,17 @@ public class TargetSourceMappingSegmentationProcessor : Processor
                 if (prefix[i] == ' ') left_start++;
             }
 
-            if (left_start > 0 && string.Compare(pos[left_start - 1], "IN") == 0)
+            //rule 2 (v0.1)
+            if (left_start > 0)
             {
-                if (string.Compare(tks[left_start - 1], "that") != 0)
+                if (string.Compare(pos[left_start - 1], "IN") == 0)
+                {
+                    if (string.Compare(tks[left_start - 1], "that") != 0)
+                    {
+                        continue;
+                    }
+                }
+                else if (string.Compare(pos[left_start - 1], ",") != 0)
                 {
                     continue;
                 }

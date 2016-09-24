@@ -30,6 +30,17 @@ PairMentions =
     USING TargetSourceMappingSegmentationProcessor
     HAVING string.Compare(Left, Right) != 0;
 
+//rule 3 (v0.1)
+PairMentions = SELECT * FROM PairMentions
+    WHERE Left.StartsWith("any") == false AND Right.StartsWith("any") == false
+          AND Left.StartsWith("not") == false AND Right.StartsWith("not") == false
+          AND Left.StartsWith("no") == false AND Right.StartsWith("no") == false
+          AND Left.StartsWith("part") == false AND Right.StartsWith("part") == false
+          //rule 1 (v0.6)
+          AND Left.StartsWith("the rest") == false AND Right.StartsWith("the rest") == false
+          //rule 4 (v0.6)
+          AND Left.EndsWith("percent") == false AND Right.EndsWith("percent") == false;
+
 NumOfPairMentions = SELECT COUNT(*) AS Num_Of_Pair_Mentions, 0 AS Partition_ID
 FROM PairMentions;
     

@@ -67,12 +67,15 @@ public class HeadIdentifierProcessor : Processor
 
         foreach (Row row in input.Rows)
         {
+            //acquire tagging&parsing results
             string s = row["Sentence"].String;
             int[] tkss = JsonConvert.DeserializeObject<int[]>(row["TokenStarts"].String);
             int[] tkes = JsonConvert.DeserializeObject<int[]>(row["TokenEnds"].String);
             string[] postags = JsonConvert.DeserializeObject<string[]>(row["POSTags"].String);
             int[] hs = JsonConvert.DeserializeObject<int[]>(row["Heads"].String);
             string[] rels = JsonConvert.DeserializeObject<string[]>(row["Relations"].String);
+
+
 
             foreach (string cn in considered_columns)
             {
@@ -81,6 +84,8 @@ public class HeadIdentifierProcessor : Processor
 
                 int who_has_out_of_range_head = -1;
                 int num_out_of_range_head = 0;
+                //rule 4 (v0.1)
+                bool mis_understood_vbng = false;
 
                 for (int i = start_idx; i < end_idx; ++i)
                 {
@@ -88,7 +93,23 @@ public class HeadIdentifierProcessor : Processor
                     {
                         who_has_out_of_range_head = i;
                         num_out_of_range_head++;
+
+                        //rule 4 (v0.1)
+                        if (string.Compare(postags[i], "VBN") == 0 ||
+                            string.Compare(postags[i], "VBG") == 0)
+                        {
+                            mis_understood_vbng = true;
+                            break;
+                        }
                     }
+                }
+
+                //rule 4 (v0.1)
+                if (mis_understood_vbng == true)
+                {
+                    output[cn + "Head"].Set(string.Empty);
+                    output[cn + "HeadIdentification"].Set("Failed");
+                    continue;
                 }
 
                 if (num_out_of_range_head == 1)

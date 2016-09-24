@@ -2,7 +2,6 @@
 //Used for tracking history
 
 #DECLARE Input_Path string = @@SI_Courpus_Path@@;
-
 #DECLARE IsLiteral int = @@int_literal_flag@@;
 #DECLARE Pattern string = @@str_pattern@@;
 
@@ -15,6 +14,12 @@ Corpus = EXTRACT Sentence:string,
          FROM @Input_Path
          USING DefaultTextExtractor("-silence");
 #ENDIF
+
+//rule 1 (v0.1)
+Corpus = SELECT * FROM Corpus
+WHERE Sentence.EndsWith("!") == false AND Sentence.EndsWith("?") == false
+      //rule 3 (v0.6)
+      AND Sentence.EndsWith(":") == false;
 
 /*
 see <data-driven metaphor recognition and explanation>
