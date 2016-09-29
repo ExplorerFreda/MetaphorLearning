@@ -1,0 +1,113 @@
+﻿//Script GUID:0e9dfdda-2f7c-4caf-ada2-a810f0c0abaa
+//Used for tracking history
+
+G =
+    SSTREAM @@SI_Input_Path@@;
+
+//select Wikipedia entities
+E2WikipediaUrl =
+    SELECT DISTINCT _S AS _E,
+                    _O.Substring(1, _O.LastIndexOf('"') - 1) AS Wikipedia_Url
+    FROM G
+    WHERE _P == "http://knowledge.microsoft.com/mso/type.object.source_url"
+          AND _O.StartsWith("\"http://en.wikipedia.org/wiki/") == true;
+
+WikipediaE =
+    SELECT DISTINCT _E
+    FROM E2WikipediaUrl;
+
+WEG =
+    SELECT _S,
+           _P,
+           _O
+    FROM G
+         INNER JOIN
+             WikipediaE
+         ON _S == _E;
+
+//extract the names and alias of wikipedia entities
+E2Name =
+    SELECT DISTINCT _S AS _E,
+                    _O.Substring(1, _O.LastIndexOf('"') - 1) AS Name //"Evander Holyfield"^^mso:text@en
+    FROM WEG
+    WHERE _P == "http://knowledge.microsoft.com/mso/type.object.name"
+          AND _O.EndsWith("@en") == true;
+
+E2Alias =
+    SELECT DISTINCT _S AS _E,
+                    _O.Substring(1, _O.LastIndexOf('"') - 1) AS Alias //
+    FROM WEG
+    WHERE _P == "http://knowledge.microsoft.com/mso/type.object.alias"
+          AND
+          (_O.EndsWith("^^mso:string") == true OR _O.EndsWith("@en") == true);
+
+//extract subgraph where the subject and the object in a triple are both Wikipedia Entity
+WEG =
+    SELECT _S,
+           _P,
+           _O
+    FROM WEG
+    //rule 1 (v1.1)
+    //only consider meaningful relations
+    WHERE _P.StartsWith("http://knowledge.microsoft.com/mso/") == true;
+
+WEG =
+    SELECT _S,
+           _P,
+           _O
+    FROM WEG
+         INNER JOIN
+             WikipediaE
+         ON _O == _E;
+
+EntVocab =
+    SELECT _S AS _E
+    FROM WEG
+    UNION DISTINCT
+    SELECT _O AS _E
+    FROM WEG;
+
+NumE =
+    SELECT COUNT( * ) AS Num_Of_Entities,
+           0 AS PartitionID
+    FROM EntVocab;
+
+NumR =
+    SELECT COUNT(DISTINCT _P) AS Num_Of_Relations,
+           0 AS PartitionID
+    FROM WEG;
+
+NumT =
+    SELECT COUNT( * ) AS Num_Of_Triplets,
+           0 AS PartitionID
+    FROM WEG;
+
+Stat =
+    SELECT Num_Of_Entities,
+           Num_Of_Relations,
+           Num_Of_Triplets
+    FROM NumE,
+         NumR,
+         NumT
+    WHERE NumE.PartitionID == NumR.PartitionID
+          AND NumR.PartitionID == NumT.PartitionID;
+
+OUTPUT WEG
+TO SSTREAM @@SO_SubGraph@@
+   CLUSTERED BY _S;
+
+OUTPUT Stat
+TO SSTREAM @@SO_Stat@@;
+
+//output auxiliary relations
+OUTPUT E2WikipediaUrl
+TO SSTREAM @@SO_E2WikipediaUrl@@
+   CLUSTERED BY _E;
+
+OUTPUT E2Name
+TO SSTREAM @@SO_E2Name@@
+   CLUSTERED BY _E;
+
+OUTPUT E2Alias
+TO SSTREAM @@SO_E2Alias@@
+   CLUSTERED BY _E;

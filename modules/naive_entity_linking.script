@@ -1,0 +1,105 @@
+﻿//Script GUID:ceb56d86-bda9-4141-b577-e08e17c8fde7
+//Used for tracking history
+
+G =
+    SSTREAM @@SI_KG_Path@@;
+
+EntVocab =
+    SELECT _S AS _E
+    FROM G
+    UNION DISTINCT
+    SELECT _O AS _E
+    FROM G;
+
+E2Name =
+    SSTREAM @@SI_E2N_Path@@;
+
+E2Name =
+    SELECT E2Name.*
+    FROM E2Name
+         INNER JOIN
+             EntVocab
+         ON E2Name._E == EntVocab._E;
+
+E2Name =
+    SELECT E2Name.*
+    FROM E2Name
+    UNION DISTINCT
+    SELECT _E,
+           StringNormalization.StringNormalization.MediateNormalization(Name) AS Name
+    FROM E2Name
+    HAVING string.IsNullOrEmpty(Name) == false;
+
+Mentions =
+    SSTREAM @@SI_Input_Path@@;
+
+Mentions =
+    SELECT *,
+           Math.Abs(Sentence.GetHashCode() % 2000) AS PartitionID
+    FROM Mentions
+    WHERE String.Compare(LeftHeadIdentification, "Failed") != 0 AND
+          String.Compare(RightHeadIdentification, "Failed") != 0;
+
+NPCandidates =
+    REDUCE Mentions
+    ON PartitionID
+    USING NPDeduplicator;
+
+N2E =
+    SELECT E2Name._E,
+           NPCandidates.NP AS Name,
+           PartitionID
+    FROM NPCandidates
+         INNER JOIN
+             E2Name
+         ON
+         NPCandidates.NP == E2Name.Name;
+
+Extractions =
+    COMBINE Mentions WITH N2E
+    ON Mentions.PartitionID == N2E.PartitionID
+    USING StringMatchingLinker;
+
+Pair =
+    SELECT DISTINCT LeftNode,
+                    RightNode
+    FROM Extractions;
+
+Vocab =
+    SELECT LeftNode AS Node
+    FROM Pair
+    UNION DISTINCT
+    SELECT RightNode AS Node
+    FROM Pair;
+
+NumMention =
+    SELECT COUNT( * ) AS Num_Of_Mentions,
+           0 AS PartitionID
+    FROM Extractions;
+
+NumPair =
+    SELECT COUNT( * ) AS Num_Of_Pairs,
+           0 AS PartitionID
+    FROM Pair;
+
+NumNode =
+    SELECT COUNT( * ) AS Num_Of_Nodes,
+           0 AS PartitionID
+    FROM Vocab;
+
+Stat =
+    SELECT Num_Of_Mentions,
+           Num_Of_Pairs,
+           Num_Of_Nodes
+    FROM NumMention,
+         NumPair,
+         NumNode
+    WHERE NumMention.PartitionID == NumPair.PartitionID
+          AND NumPair.PartitionID == NumNode.PartitionID;
+
+OUTPUT Extractions
+TO SSTREAM @@SO_Output_Path@@
+   CLUSTERED BY LeftNode, RightNode;
+
+OUTPUT Stat
+TO SSTREAM @@SO_Stat@@;
