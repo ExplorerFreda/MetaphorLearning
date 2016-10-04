@@ -47,10 +47,20 @@
       <ScopeOldParameters>str_considered_columns=(\"Left, Right\"),SI_Input_Path=(@\"D:\v-zw\metaphor_learning\data\debug\pairs.tsv\"),SO_Output_Path=(@\"d:\v-zw\metaphor_learning\data\debug\head_of_pairs.ss\"),Clutered_Columns=(LeftHead,RightHead),SO_Stat_Output_Path=(@\"d:\v-zw\metaphor_learning\data\debug\head_of_pairs_stat.ss\")</ScopeOldParameters>
       <ScopeClusterParameters>str_considered_columns=(\"Left, Right\"),SI_Input_Path=(\"/users/v-zw/Metaphor/parsed_bing_retro_index_islikea_pairs.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/bing_retro_index_islikea_pairs.ss\"),Clutered_Columns=(LeftHead,RightHead),SO_Stat_Output_Path=(\"/users/v-zw/Metaphor/bing_retro_index_islikea_pairs_stat.ss\")</ScopeClusterParameters>
     </Script>
+    <Script Include="linguistic-level_metaphor_pair_reduction.script">
+      <RemoveUselessParameters>False</RemoveUselessParameters>
+      <ScopeOldParameters>int_pair_discard_threshold=(3),int_consider_modifier=(1),int_consider_frequency=(0),SI_Input_Path=(\"/local/Aether/_d/v-zw/dda90e27-b7a6-4e11-a484-bc6a4659d706@@@CosmosPathsMerger@@@1b60b2cf@@@9-27-2016_11-44-00_AM/SO_output_path/SO_output_path_564dfa64-8789-43e6-b3de-d1f8c5ca6e79.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/mentions.ss\"),SO_Pair_Path=(\"/users/v-zw/Metaphor/pairs.ss\"),SO_Stat_Path=(\"/users/v-zw/Metaphor/stat.ss\")</ScopeOldParameters>
+      <ScopeClusterParameters>int_pair_discard_threshold=(3),int_consider_modifier=(1),int_consider_frequency=(0),SI_Input_Path=(\"/local/Aether/_d/v-zw/dda90e27-b7a6-4e11-a484-bc6a4659d706@@@CosmosPathsMerger@@@1b60b2cf@@@9-27-2016_11-44-00_AM/SO_output_path/SO_output_path_564dfa64-8789-43e6-b3de-d1f8c5ca6e79.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/mentions.ss\"),SO_Pair_Path=(\"/users/v-zw/Metaphor/pairs.ss\"),SO_Stat_Path=(\"/users/v-zw/Metaphor/stat.ss\")</ScopeClusterParameters>
+    </Script>
     <Script Include="naive_entity_linking.script">
       <RemoveUselessParameters>False</RemoveUselessParameters>
       <ScopeClusterParameters>SI_KG_Path=(\"/local/Aether/_d/v-zw/dda90e27-b7a6-4e11-a484-bc6a4659d706@@@extract_satori_wikipedia_subgraph@@@6d46c8d0@@@9-27-2016_11-30-23_AM/SO_SubGraph/SO_SubGraph_0120f7a2-009e-4b0a-98c9-1e38250050b1.ss\"),SI_E2N_Path=(\"/local/Aether/_d/v-zw/dda90e27-b7a6-4e11-a484-bc6a4659d706@@@extract_satori_wikipedia_subgraph@@@6d46c8d0@@@9-27-2016_11-30-23_AM/SO_E2Name/SO_E2Name_410ad12c-ea82-4246-b3b9-7236fc929844.ss\"),SI_Input_Path=(\"/local/Aether/_d/v-zw/dda90e27-b7a6-4e11-a484-bc6a4659d706@@@CosmosPathsMerger@@@1b60b2cf@@@9-27-2016_11-44-00_AM/SO_output_path/SO_output_path_564dfa64-8789-43e6-b3de-d1f8c5ca6e79.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/extractions.ss\"),SO_Stat=(\"/users/v-zw/Metaphor/extractions_stat.ss\")</ScopeClusterParameters>
       <ScopeOldParameters>SI_KG_Path=(\"/local/Aether/_d/v-zw/dda90e27-b7a6-4e11-a484-bc6a4659d706@@@extract_satori_wikipedia_subgraph@@@6d46c8d0@@@9-27-2016_11-30-23_AM/SO_SubGraph/SO_SubGraph_0120f7a2-009e-4b0a-98c9-1e38250050b1.ss\"),SI_E2N_Path=(\"/local/Aether/_d/v-zw/dda90e27-b7a6-4e11-a484-bc6a4659d706@@@extract_satori_wikipedia_subgraph@@@6d46c8d0@@@9-27-2016_11-30-23_AM/SO_E2Name/SO_E2Name_410ad12c-ea82-4246-b3b9-7236fc929844.ss\"),SI_Input_Path=(\"/local/Aether/_d/v-zw/dda90e27-b7a6-4e11-a484-bc6a4659d706@@@CosmosPathsMerger@@@1b60b2cf@@@9-27-2016_11-44-00_AM/SO_output_path/SO_output_path_564dfa64-8789-43e6-b3de-d1f8c5ca6e79.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/extractions.ss\"),SO_Stat=(\"/users/v-zw/Metaphor/extractions_stat.ss\")</ScopeOldParameters>
+    </Script>
+    <Script Include="pair_distant_alignment.script">
+      <RemoveUselessParameters>False</RemoveUselessParameters>
+      <ScopeOldParameters>str_ngram=(\"3\"),SI_Pair_Path=(\"/local/Aether/_3/v-zw/3c9afaf4-c4e6-424e-ae24-a5f5ca17f598@@@linguistic-level_metaphor_pair_reduction@@@63a575f4@@@9-30-2016_01-44-23_AM/SO_Pair_Path/SO_Pair_Path_1556dd8d-aae9-458d-8afc-a0668f71ee41.ss\"),SI_Input_Path=(\"/local/Aether/_0/v-zw/0a54fd8f-ce4d-4edc-8136-8efce3befad2@@@dependency_parsing@@@d0e7629e@@@9-15-2016_07-51-04_AM/SO_Output_Path/SO_Output_Path_31f1c5e6-342e-45da-ab2a-01a791b3bcc0.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/witness.ss\")</ScopeOldParameters>
+      <ScopeClusterParameters>str_ngram=(\"3\"),SI_Pair_Path=(\"/local/Aether/_3/v-zw/3c9afaf4-c4e6-424e-ae24-a5f5ca17f598@@@linguistic-level_metaphor_pair_reduction@@@63a575f4@@@9-30-2016_01-44-23_AM/SO_Pair_Path/SO_Pair_Path_1556dd8d-aae9-458d-8afc-a0668f71ee41.ss\"),SI_Input_Path=(\"/local/Aether/_0/v-zw/0a54fd8f-ce4d-4edc-8136-8efce3befad2@@@dependency_parsing@@@d0e7629e@@@9-15-2016_07-51-04_AM/SO_Output_Path/SO_Output_Path_31f1c5e6-342e-45da-ab2a-01a791b3bcc0.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/witness.ss\")</ScopeClusterParameters>
     </Script>
     <Script Include="part_of_speech_tagging.script">
       <RemoveUselessParameters>False</RemoveUselessParameters>
@@ -92,8 +102,14 @@
     <ScriptCode Include="head_identification.script.cs">
       <DependentUpon>head_identification.script</DependentUpon>
     </ScriptCode>
+    <ScriptCode Include="linguistic-level_metaphor_pair_reduction.script.cs">
+      <DependentUpon>linguistic-level_metaphor_pair_reduction.script</DependentUpon>
+    </ScriptCode>
     <ScriptCode Include="naive_entity_linking.script.cs">
       <DependentUpon>naive_entity_linking.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="pair_distant_alignment.script.cs">
+      <DependentUpon>pair_distant_alignment.script</DependentUpon>
     </ScriptCode>
     <ScriptCode Include="part_of_speech_tagging.script.cs">
       <DependentUpon>part_of_speech_tagging.script</DependentUpon>

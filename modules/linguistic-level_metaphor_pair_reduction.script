@@ -1,0 +1,137 @@
+﻿//Script GUID:81c07c5d-578d-4b5e-a3c0-67068f893cdb
+//Used for tracking history
+
+#DECLARE PairDiscardThreshold int = @@int_pair_discard_threshold@@;
+#DECLARE ConsiderModifier int = @@int_consider_modifier@@;
+#DECLARE ConsiderFrequency int = @@int_consider_frequency@@;
+
+Mentions =
+    SSTREAM @@SI_Input_Path@@;
+
+Mentions =
+    SELECT *
+    FROM Mentions
+    WHERE String.Compare(LeftHeadIdentification, "Failed") != 0 AND
+          String.Compare(RightHeadIdentification, "Failed") != 0;
+
+//consider modifiers of each NP
+#IF(@ConsiderModifier == 1)
+    Mentions =
+        SELECT StringNormalization.StringNormalization.MediateNormalization(Left) AS LeftHead,
+               StringNormalization.StringNormalization.MediateNormalization(Right) AS RightHead,
+               Sentence
+        FROM Mentions;
+#ENDIF
+
+Mentions =
+    SELECT *
+    FROM Mentions
+    WHERE
+    String.IsNullOrEmpty(LeftHead) == false AND
+    String.IsNullOrEmpty(RightHead) == false AND
+    String.Compare(LeftHead, RightHead) != 0;
+
+//rule 1 (v1.6)
+Mentions =
+    SELECT *
+    FROM Mentions
+    WHERE LeftHead.StartsWith("everything") == false AND
+          RightHead.StartsWith("everything") == false AND
+          LeftHead.StartsWith("anything") == false AND
+          RightHead.StartsWith("anything") == false AND
+          LeftHead.StartsWith("nothing") == false AND
+          RightHead.StartsWith("nothing") == false AND
+          LeftHead.StartsWith("something") == false AND
+          RightHead.StartsWith("something") == false AND
+          String.Compare(LeftHead, "it") != 0 AND
+          String.Compare(RightHead, "it") != 0;
+
+Mentions =
+    SELECT LeftHead,
+           RightHead,
+           Sentence,
+           COUNT( * ) AS Freq
+    FROM Mentions
+    GROUP BY LeftHead,
+             RightHead,
+             Sentence;
+
+#IF(@ConsiderFrequency == 1)
+Pairs =
+    SELECT LeftHead,
+           RightHead,
+           SUM( Freq ) AS Num_Mentions
+    FROM Mentions
+    GROUP BY LeftHead,
+             RightHead
+    HAVING Num_Mentions >= @PairDiscardThreshold;
+#ELSE
+Pairs =
+    SELECT LeftHead,
+           RightHead,
+           COUNT( * ) AS Num_Distinct_Mentions
+    FROM Mentions
+    GROUP BY LeftHead,
+             RightHead
+    HAVING Num_Distinct_Mentions >= @PairDiscardThreshold;
+#ENDIF
+
+Mentions =
+    SELECT Mentions.*
+    FROM Mentions
+         INNER JOIN
+             Pairs
+         ON
+         Mentions.LeftHead == Pairs.LeftHead AND
+         Mentions.RightHead == Pairs.RightHead;
+
+NumMentions =
+    SELECT COUNT( * ) AS Num_Of_Distinct_Mentions,
+           0 AS PartitionID
+    FROM Mentions;
+
+NumPairs =
+    SELECT COUNT( * ) AS Num_Of_Distinct_Pairs,
+           0 AS PartitionID
+    FROM Pairs;
+
+Vocab =
+    SELECT LeftHead AS Concept
+    FROM Pairs
+    UNION DISTINCT
+    SELECT RightHead AS Concept
+    FROM Pairs;
+
+NumConcepts =
+    SELECT COUNT( * ) AS Num_Of_Concepts,
+           0 AS PartitionID
+    FROM Vocab;
+
+Stat =
+    SELECT Num_Of_Distinct_Mentions,
+           Num_Of_Distinct_Pairs,
+           Num_Of_Concepts
+    FROM NumMentions,
+         NumPairs,
+         NumConcepts
+    WHERE NumMentions.PartitionID == NumPairs.PartitionID AND
+          NumPairs.PartitionID == NumConcepts.PartitionID;
+
+OUTPUT Mentions
+TO SSTREAM @@SO_Output_Path@@
+   CLUSTERED BY LeftHead, RightHead;
+
+#IF(@ConsiderFrequency == 1)
+    OUTPUT Pairs
+    TO SSTREAM @@SO_Pair_Path@@
+       CLUSTERED BY LeftHead
+           SORTED BY Num_Mentions DESC;
+#ELSE
+OUTPUT Pairs
+TO SSTREAM @@SO_Pair_Path@@
+   CLUSTERED BY LeftHead
+       SORTED BY Num_Distinct_Mentions DESC;
+#ENDIF
+
+OUTPUT Stat
+TO SSTREAM @@SO_Stat_Path@@;

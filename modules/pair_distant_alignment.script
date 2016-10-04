@@ -1,0 +1,28 @@
+﻿//Script GUID:66e4cf1d-eb99-41f1-afc9-1479ce18558a
+//Used for tracking history
+
+#DECLARE NGram string = @@str_ngram@@;
+
+Pair =
+    SSTREAM @@SI_Pair_Path@@;
+
+Corpus =
+    SSTREAM @@SI_Input_Path@@;
+
+Corpus =
+    SELECT *,
+           (int)Math.Abs(Corpus.Sentence.GetHashCode() % 2000) AS Partition_ID
+    FROM Corpus;
+
+Pair =
+    PROCESS Pair
+    USING CopyProcessor;
+
+Witness =
+    COMBINE Corpus WITH Pair
+    ON Corpus.Partition_ID == Pair.Partition_ID
+    USING Alignment(@NGram);
+
+OUTPUT Witness
+TO SSTREAM @@SO_Output_Path@@
+   CLUSTERED BY LeftHead, RightHead;
