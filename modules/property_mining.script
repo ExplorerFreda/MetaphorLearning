@@ -1,0 +1,144 @@
+﻿//Script GUID:3bcd981d-a0b9-4e47-85d0-46efaedf8131
+//Used for tracking history
+
+Mentions =
+    SSTREAM @@SI_Input_Path@@;
+
+Mentions =
+    SELECT *
+    FROM Mentions
+    WHERE String.Compare(LeftHeadIdentification, "Failed") != 0 AND
+          String.Compare(RightHeadIdentification, "Failed") != 0;
+
+Mentions =
+    SELECT *
+    FROM Mentions
+    WHERE
+    String.IsNullOrEmpty(LeftHead) == false AND
+    String.IsNullOrEmpty(RightHead) == false AND
+    String.Compare(LeftHead, RightHead) != 0;
+
+//rule 1 (v1.6)
+Mentions =
+    SELECT *
+    FROM Mentions
+    WHERE LeftHead.StartsWith("everything") == false AND
+          RightHead.StartsWith("everything") == false AND
+          LeftHead.StartsWith("anything") == false AND
+          RightHead.StartsWith("anything") == false AND
+          LeftHead.StartsWith("nothing") == false AND
+          RightHead.StartsWith("nothing") == false AND
+          LeftHead.StartsWith("something") == false AND
+          RightHead.StartsWith("something") == false AND
+          String.Compare(LeftHead, "it") != 0 AND
+          String.Compare(RightHead, "it") != 0;
+
+Mentions =
+    PROCESS Mentions
+    USING PropertyExtractor;
+
+Mentions =
+    SELECT LeftHead,
+           RightHead,
+           Property,
+           Sentence,
+           COUNT( * ) AS Frequency
+    FROM Mentions
+    GROUP BY LeftHead,
+             RightHead,
+             Property,
+             Sentence;
+
+PairProperties =
+    SELECT LeftHead,
+           RightHead,
+           Property,
+           SUM(Frequency) AS Frequency
+    FROM Mentions
+    GROUP BY LeftHead,
+             RightHead,
+             Property;
+
+PairProperties =
+    REDUCE PairProperties
+    ON
+    LeftHead, RightHead
+    PRESORT Frequency DESC
+    USING PropertyConcatenator;
+
+NPProperties =
+    SELECT LeftHead AS NP,
+           Property,
+           Frequency
+    FROM Mentions
+    UNION ALL
+    SELECT RightHead AS NP,
+           Property,
+           Frequency
+    FROM Mentions;
+
+NPProperties =
+    SELECT NP,
+           Property,
+           SUM(Frequency) AS Frequency
+    FROM NPProperties
+    GROUP BY NP,
+             Property;
+
+NPProperties =
+    SELECT NP,
+           string.Join(";", LIST(Property + ":" + Frequency.ToString())) AS PropertyRankingList
+    FROM NPProperties
+    GROUP BY NP;
+
+PropertyLexicon =
+    SELECT Property,
+           SUM(Frequency) AS Frequency
+    FROM Mentions
+    GROUP BY Property;
+
+NumPair =
+    SELECT COUNT( * ) AS Num_Of_Pairs,
+           0 AS Partition_ID
+    FROM PairProperties;
+
+NumNP =
+    SELECT COUNT( * ) AS Num_Of_NPs,
+           0 AS Partition_ID
+    FROM NPProperties;
+    
+NumAdj =
+    SELECT COUNT( * ) AS Num_Of_Adjs,
+           0 AS Partition_ID
+    FROM PropertyLexicon;
+
+Stat =
+    SELECT Num_Of_Pairs,
+           Num_Of_NPs,
+           Num_Of_Adjs
+    FROM NumPair,
+         NumNP,
+         NumAdj
+    WHERE NumPair.Partition_ID == NumNP.Partition_ID AND
+          NumNP.Partition_ID == NumAdj.Partition_ID;
+
+OUTPUT Mentions
+TO SSTREAM @@SO_Mention_Output_Path@@
+   CLUSTERED BY LeftHead, RightHead, Property
+       SORTED BY Frequency DESC;
+
+OUTPUT PairProperties
+TO SSTREAM @@SO_Pair_Output_Path@@
+   CLUSTERED BY LeftHead, RightHead;
+
+OUTPUT NPProperties
+TO SSTREAM @@SO_NP_Output_Path@@
+   CLUSTERED BY NP;
+
+OUTPUT PropertyLexicon
+TO SSTREAM @@SO_Vocab_Output_Path@@
+   CLUSTERED BY Property
+       SORTED BY Frequency DESC;
+
+OUTPUT Stat
+TO SSTREAM @@SO_Stat_Path@@;

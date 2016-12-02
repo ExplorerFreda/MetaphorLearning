@@ -1,0 +1,8 @@
+﻿//Script GUID:0d0bc53b-2ac3-472f-ad3e-0bcbe4a5ea0c
+//Used for tracking history
+
+Extractions =
+    SSTREAM "/local/Aether/_9/v-zw/9cf35d39-feda-453f-87d2-9fa25af97b13@@@linguistic-level_metaphor_pair_reduction@@@63a575f4@@@10-4-2016_11-19-25_AM/SO_Output_Path/SO_Output_Path_54059f41-9393-403f-bfa7-44de99aa65aa.ss";
+
+OUTPUT Extractions
+TO "/users/v-zw/Metaphor/reduced_on_heads_ge2.tsv";

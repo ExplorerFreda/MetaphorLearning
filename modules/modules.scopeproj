@@ -31,6 +31,7 @@
       <RemoveUselessParameters>False</RemoveUselessParameters>
       <ScopeOldParameters>SI_Input_Path0=(@\"D:\v-zw\metaphor_learning\data\debug\matched_sentences_stat.ss\"),SI_Input_Path1=(@\"D:\v-zw\metaphor_learning\data\debug\matched_sentences_stat.ss\"),SO_Output_Path=(@\"D:\v-zw\metaphor_learning\data\debug\aggregated_matched_sentences_stat.ss\")</ScopeOldParameters>
     </Script>
+    <Script Include="as_shell.script" />
     <Script Include="basic_level_categorization.script" />
     <Script Include="dependency_parsing.script">
       <RemoveUselessParameters>False</RemoveUselessParameters>
@@ -77,6 +78,11 @@
       <ScopeOldParameters>SI_Courpus_Path=(@\"D:\v-zw\metaphor_learning\data\debug\keyword_tagged.tsv\"),SO_Output_Stat_Path=(\"d:/v-zw/metaphor_learning/data/debug/toy_pair_stat.ss\"),SO_Output_Path=(\"d:/v-zw/metaphor_learning/data/debug/toy_pair.ss\")</ScopeOldParameters>
       <ScopeClusterParameters>SI_Courpus_Path=(\"/local/Aether/_c/v-zw/c636c4ea-0b14-45e2-b5f1-bd8c39ec9844@@@part_of_speech_tagging@@@b092d2aa@@@7-18-2016_01-37-21_AM/SO_Output_Path/SO_Output_Path_179160c6-f2a5-4ee3-919a-112490ddbf53.ss\"),SO_Output_Stat_Path=(\"/users/v-zw/Metaphor/bing_retro_index_islike_pair_stat.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/bing_retro_index_islike_pair.ss\")</ScopeClusterParameters>
     </Script>
+    <Script Include="property_mining.script">
+      <RemoveUselessParameters>True</RemoveUselessParameters>
+      <ScopeOldParameters>SI_Input_Path=(\"/local/Aether/_d/v-zw/dda90e27-b7a6-4e11-a484-bc6a4659d706@@@CosmosPathsMerger@@@2fc336a1@@@9-27-2016_11-44-32_AM/SO_output_path/SO_output_path_20bab447-c5f6-4620-bacf-6c61e0fc4e3c.ss\"),SO_Mention_Output_Path=(\"/users/v-zw/Metaphor/property_mentions.ss\"),SO_Pair_Output_Path=(\"/users/v-zw/Metaphor/property_pair.ss\"),SO_NP_Output_Path=(\"/users/v-zw/Metaphor/property_np.ss\"),SO_Vocab_Output_Path=(\"/users/v-zw/Metaphor/property_vocab.ss\"),SO_Stat_Path=(\"/users/v-zw/Metaphor/property_stat.ss\")</ScopeOldParameters>
+      <ScopeClusterParameters>SI_Input_Path=(\"/local/Aether/_d/v-zw/dda90e27-b7a6-4e11-a484-bc6a4659d706@@@CosmosPathsMerger@@@2fc336a1@@@9-27-2016_11-44-32_AM/SO_output_path/SO_output_path_20bab447-c5f6-4620-bacf-6c61e0fc4e3c.ss\"),SO_Mention_Output_Path=(\"/users/v-zw/Metaphor/property_mentions.ss\"),SO_Pair_Output_Path=(\"/users/v-zw/Metaphor/property_pair.ss\"),SO_NP_Output_Path=(\"/users/v-zw/Metaphor/property_np.ss\"),SO_Vocab_Output_Path=(\"/users/v-zw/Metaphor/property_vocab.ss\"),SO_Stat_Path=(\"/users/v-zw/Metaphor/property_stat.ss\")</ScopeClusterParameters>
+    </Script>
     <Script Include="sentence_segmentation.script">
       <RemoveUselessParameters>False</RemoveUselessParameters>
       <ScopeOldParameters>int_is_html_encoded=(1),int_min_num_of_char=(16),int_max_num_of_char=(256),str_lowercase_letter_ratio=(\"0.65\"),str_model_folder=(\"/users/v-zw/ModelsFull/\"),Text_Column=(Content),SI_Courpus_Path=(\"/local/v-zw/ClueWeb/para1.ss\"),SO_Output_Path=(\"/local/v-zw/ClueWeb/sent1.ss\"),SO_Output_Stat_Path=(\"/local/v-zw/ClueWeb/sent1_stat.ss\")</ScopeOldParameters>
@@ -89,6 +95,9 @@
     </Script>
     <ScriptCode Include="aggregate_statistics.script.cs">
       <DependentUpon>aggregate_statistics.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="as_shell.script.cs">
+      <DependentUpon>as_shell.script</DependentUpon>
     </ScriptCode>
     <ScriptCode Include="basic_level_categorization.script.cs">
       <DependentUpon>basic_level_categorization.script</DependentUpon>
@@ -119,6 +128,9 @@
     </ScriptCode>
     <ScriptCode Include="pattern-based_pair_extraction.script.cs">
       <DependentUpon>pattern-based_pair_extraction.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="property_mining.script.cs">
+      <DependentUpon>property_mining.script</DependentUpon>
     </ScriptCode>
     <ScriptCode Include="sentence_segmentation.script.cs">
       <DependentUpon>sentence_segmentation.script</DependentUpon>
