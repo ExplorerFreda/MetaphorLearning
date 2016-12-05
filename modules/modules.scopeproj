@@ -48,6 +48,10 @@
       <ScopeOldParameters>str_considered_columns=(\"Left, Right\"),SI_Input_Path=(@\"D:\v-zw\metaphor_learning\data\debug\pairs.tsv\"),SO_Output_Path=(@\"d:\v-zw\metaphor_learning\data\debug\head_of_pairs.ss\"),Clutered_Columns=(LeftHead,RightHead),SO_Stat_Output_Path=(@\"d:\v-zw\metaphor_learning\data\debug\head_of_pairs_stat.ss\")</ScopeOldParameters>
       <ScopeClusterParameters>str_considered_columns=(\"Left, Right\"),SI_Input_Path=(\"/users/v-zw/Metaphor/parsed_bing_retro_index_islikea_pairs.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/bing_retro_index_islikea_pairs.ss\"),Clutered_Columns=(LeftHead,RightHead),SO_Stat_Output_Path=(\"/users/v-zw/Metaphor/bing_retro_index_islikea_pairs_stat.ss\")</ScopeClusterParameters>
     </Script>
+    <Script Include="knowledge_graph_mining.script">
+      <RemoveUselessParameters>False</RemoveUselessParameters>
+      <ScopeOldParameters>ClosedSimiles=(@\"D:\Metaphors\data\EACLData\closed_similes.ss\"),OpenSimiles=(@\"D:\Metaphors\data\EACLData\open_similes.ss\"),IsAPattern=(@\"D:\Metaphors\data\EACLData\isA_pattern.ss\"),Probase=(@\"D:\Metaphors\data\EACLData\Isa_Core_201602.tsv\"),TriplePath=(@\"D:\Metaphors\data\EACLData\triple.ss\"),Stat_ClosedSimilesPath=(@\"D:\Metaphors\data\EACLData\Stat_closedsimiles.ss\"),Stat_OpenSimilesPath=(@\"D:\Metaphors\data\EACLData\Stat_opensimiles.ss\"),Stat_IsAPatternPath=(@\"D:\Metaphors\data\EACLData\Stat_isapattern.ss\"),Stat_ProbasePath=(@\"D:\Metaphors\data\EACLData\Stat_Probase.ss\"),RelationCountPath=(@\"D:\Metaphors\data\EACLData\Relation_Count.ss\"),ConceptDict=(@\"D:\Metaphors\data\EACLData\Concept_Dict.ss\")</ScopeOldParameters>
+    </Script>
     <Script Include="linguistic-level_metaphor_pair_reduction.script">
       <RemoveUselessParameters>False</RemoveUselessParameters>
       <ScopeOldParameters>int_pair_discard_threshold=(3),int_consider_modifier=(1),int_consider_frequency=(0),SI_Input_Path=(\"/local/Aether/_d/v-zw/dda90e27-b7a6-4e11-a484-bc6a4659d706@@@CosmosPathsMerger@@@1b60b2cf@@@9-27-2016_11-44-00_AM/SO_output_path/SO_output_path_564dfa64-8789-43e6-b3de-d1f8c5ca6e79.ss\"),SO_Output_Path=(\"/users/v-zw/Metaphor/mentions.ss\"),SO_Pair_Path=(\"/users/v-zw/Metaphor/pairs.ss\"),SO_Stat_Path=(\"/users/v-zw/Metaphor/stat.ss\")</ScopeOldParameters>
@@ -110,6 +114,9 @@
     </ScriptCode>
     <ScriptCode Include="head_identification.script.cs">
       <DependentUpon>head_identification.script</DependentUpon>
+    </ScriptCode>
+    <ScriptCode Include="knowledge_graph_mining.script.cs">
+      <DependentUpon>knowledge_graph_mining.script</DependentUpon>
     </ScriptCode>
     <ScriptCode Include="linguistic-level_metaphor_pair_reduction.script.cs">
       <DependentUpon>linguistic-level_metaphor_pair_reduction.script</DependentUpon>
@@ -300,18 +307,6 @@
       <Name>Newtonsoft.Json</Name>
       <AssemblyName>Newtonsoft.Json.dll</AssemblyName>
       <HintPath>..\..\..\Json50r6\Bin\Net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="OpenNLPInterface">
-      <Name>OpenNLPInterface</Name>
-      <AssemblyName>OpenNLPInterface.dll</AssemblyName>
-      <HintPath>..\NLPTech\bin\Release\OpenNLPInterface.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="StringNormalization">
-      <Name>StringNormalization</Name>
-      <AssemblyName>StringNormalization.dll</AssemblyName>
-      <HintPath>..\..\..\dlls\StringNormalization.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>

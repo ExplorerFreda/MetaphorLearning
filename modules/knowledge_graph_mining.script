@@ -1,0 +1,358 @@
+﻿//Script GUID:7b877894-b0b6-4d1c-8187-ce4925d8b5ae
+//Used for tracking history
+
+#DECLARE ClosedSimilesPath string = @@ClosedSimiles@@;
+#DECLARE OpenSimilesPath string = @@OpenSimiles@@;
+#DECLARE IsAPatternPath string = @@IsAPattern@@;
+#DECLARE ProbasePath string = @@Probase@@;
+
+#DECLARE TriplePath string = @@TriplePath@@;
+#DECLARE Stat_ClosedSimilesPath string = @@Stat_ClosedSimilesPath@@;
+#DECLARE Stat_OpenSimilesPath string = @@Stat_OpenSimilesPath@@;
+#DECLARE Stat_IsAPatternPath string = @@Stat_IsAPatternPath@@;
+#DECLARE Stat_HypernymPatternPath string = @@Stat_ProbasePath@@;
+
+
+
+//Input data
+ClosedSimilies =
+    SSTREAM @ClosedSimilesPath;
+OpenSimilies =
+    SSTREAM @OpenSimilesPath;
+IsAPatterns =
+    SSTREAM @IsAPatternPath;
+Probase =
+    EXTRACT Left : string,
+            Right : string,
+            Count : int
+    FROM @ProbasePath
+    USING DefaultTextExtractor();
+
+
+//Closed Similes
+ProcessedClosedSimiles =
+    PROCESS ClosedSimilies
+    USING RelationProcessor("closed_similes");
+
+//for relation dict begin
+RelationCount =
+    SELECT Relation,
+           SUM(Count) AS RelationCount
+    FROM ProcessedClosedSimiles
+    GROUP BY Relation;
+RelationCount =
+    SELECT Relation,
+           RelationCount
+    FROM RelationCount
+    WHERE RelationCount < 925 && RelationCount > 2;
+RelationCount =
+    SELECT Relation,
+           RelationCount
+    ORDER BY RelationCount DESC;
+OUTPUT RelationCount
+TO @@RelationCountPath@@
+USING DefaultTextOutputter();
+//for relation dict end
+	
+//for concept dict begin
+ConceptDict_ClosedSimiles =
+    SELECT Target AS Concept,
+           SUM(Count) AS ConceptCount
+    FROM ProcessedClosedSimiles
+    GROUP BY Concept
+    UNION ALL
+    SELECT Source AS Concept,
+           SUM(Count) AS ConceptCount
+    FROM ProcessedClosedSimiles
+    GROUP BY Concept;
+ConceptDict_ClosedSimiles =
+    SELECT Concept,
+           SUM(ConceptCount) AS ConceptCount
+    FROM ConceptDict_ClosedSimiles
+    GROUP BY Concept;
+ConceptDict_ClosedSimiles =
+    SELECT *
+    FROM ConceptDict_ClosedSimiles
+    WHERE ConceptCount > 2;
+//for concept dict end
+
+ProcessedClosedSimiles =
+    SELECT ProcessedClosedSimiles.Source,
+		   ProcessedClosedSimiles.Target,
+		   ProcessedClosedSimiles.Relation,
+		   ProcessedClosedSimiles.Count
+    FROM ProcessedClosedSimiles
+         INNER JOIN
+             ConceptDict_ClosedSimiles
+         ON ProcessedClosedSimiles.Target == ConceptDict_ClosedSimiles.Concept;
+ProcessedClosedSimiles =
+    SELECT ProcessedClosedSimiles.Source,
+		   ProcessedClosedSimiles.Target,
+		   ProcessedClosedSimiles.Relation,
+		   ProcessedClosedSimiles.Count
+    FROM ProcessedClosedSimiles
+         INNER JOIN
+             ConceptDict_ClosedSimiles
+         ON ProcessedClosedSimiles.Source == ConceptDict_ClosedSimiles.Concept;
+ProcessedClosedSimiles =
+    SELECT ProcessedClosedSimiles.Source,
+		   ProcessedClosedSimiles.Target,
+		   ProcessedClosedSimiles.Relation,
+		   ProcessedClosedSimiles.Count
+    FROM ProcessedClosedSimiles
+         INNER JOIN
+             RelationCount
+         ON ProcessedClosedSimiles.Relation == RelationCount.Relation;
+ProcessedClosedSimiles =
+    SELECT Target,
+           Source,
+           Relation,
+           SUM(Count) AS Count
+    FROM ProcessedClosedSimiles
+    GROUP BY Target,
+             Source,
+             Relation;
+		 
+Stat_ClosedSimiles =
+    SELECT SUM(Count) AS Num_of_Output_Closed_Similes
+    FROM ProcessedClosedSimiles;
+OUTPUT Stat_ClosedSimiles
+TO SSTREAM @Stat_ClosedSimilesPath;
+
+
+
+
+//Open Similes
+ProcessedOpenSimiles =
+    PROCESS OpenSimilies
+    USING RelationProcessor("open_similes");
+	
+//for concept dict begin
+ConceptDict_OpenSimiles =
+    SELECT Target AS Concept,
+           SUM(Count) AS ConceptCount
+    FROM ProcessedOpenSimiles
+    GROUP BY Concept
+    UNION ALL
+    SELECT Source AS Concept,
+           SUM(Count) AS ConceptCount
+    FROM ProcessedOpenSimiles
+    GROUP BY Concept;
+ConceptDict_OpenSimiles =
+    SELECT Concept,
+           SUM(ConceptCount) AS ConceptCount
+    FROM ConceptDict_OpenSimiles
+    GROUP BY Concept;
+ConceptDict_OpenSimiles =
+    SELECT *
+    FROM ConceptDict_OpenSimiles
+    WHERE ConceptCount > 2;
+OverallConceptDict =
+    SELECT *
+    FROM ConceptDict_ClosedSimiles
+    UNION ALL
+    SELECT *
+    FROM ConceptDict_OpenSimiles;
+OverallConceptDict =
+    SELECT Concept,
+           SUM(ConceptCount) AS ConceptCount
+    FROM OverallConceptDict
+    GROUP BY Concept;
+//for concept dict end
+
+ProcessedOpenSimiles =
+    SELECT ProcessedOpenSimiles.Source,
+		   ProcessedOpenSimiles.Target,
+		   ProcessedOpenSimiles.Relation,
+		   ProcessedOpenSimiles.Count
+    FROM ProcessedOpenSimiles
+         INNER JOIN
+             OverallConceptDict
+         ON ProcessedOpenSimiles.Target == OverallConceptDict.Concept;
+ProcessedOpenSimiles =
+    SELECT ProcessedOpenSimiles.Source,
+		   ProcessedOpenSimiles.Target,
+		   ProcessedOpenSimiles.Relation,
+		   ProcessedOpenSimiles.Count
+    FROM ProcessedOpenSimiles
+         INNER JOIN
+             OverallConceptDict
+         ON ProcessedOpenSimiles.Source == OverallConceptDict.Concept;
+ProcessedOpenSimiles =
+    SELECT Target,
+           Source,
+           Relation,
+           SUM(Count) AS Count
+    FROM ProcessedOpenSimiles
+    GROUP BY Target,
+             Source,
+             Relation;
+Stat_OpenSimiles =
+    SELECT SUM(Count) AS Num_of_Output_Open_Similes
+    FROM ProcessedOpenSimiles;
+OUTPUT Stat_OpenSimiles
+TO SSTREAM @Stat_OpenSimilesPath;
+
+
+
+//IsA Pattern
+ProcessedIsAPatterns =
+    PROCESS IsAPatterns
+    USING RelationProcessor("isa_pattern");
+//for concept dict begin
+ConceptDict_IsAPatterns =
+    SELECT Target AS Concept,
+           SUM(Count) AS ConceptCount
+    FROM ProcessedIsAPatterns
+    GROUP BY Concept
+    UNION ALL
+    SELECT Source AS Concept,
+           SUM(Count) AS ConceptCount
+    FROM ProcessedIsAPatterns
+    GROUP BY Concept;
+ConceptDict_IsAPatterns =
+    SELECT Concept,
+           SUM(ConceptCount) AS ConceptCount
+    FROM ConceptDict_IsAPatterns
+    GROUP BY Concept;
+ConceptDict_IsAPatterns =
+    SELECT *
+    FROM ConceptDict_IsAPatterns
+    WHERE ConceptCount > 50;
+OverallConceptDict =
+    SELECT *
+    FROM OverallConceptDict
+    UNION ALL
+    SELECT *
+    FROM ConceptDict_IsAPatterns;
+OverallConceptDict =
+    SELECT Concept,
+           SUM(ConceptCount) AS ConceptCount
+    FROM OverallConceptDict
+    GROUP BY Concept;
+//for concept dict end
+
+ProcessedIsAPatterns =
+    SELECT ProcessedIsAPatterns.Source,
+		   ProcessedIsAPatterns.Target,
+		   ProcessedIsAPatterns.Relation,
+		   ProcessedIsAPatterns.Count
+    FROM ProcessedIsAPatterns
+         INNER JOIN
+             ConceptDict_IsAPatterns
+         ON ProcessedIsAPatterns.Target == ConceptDict_IsAPatterns.Concept;
+ProcessedIsAPatterns =
+    SELECT ProcessedIsAPatterns.Source,
+		   ProcessedIsAPatterns.Target,
+		   ProcessedIsAPatterns.Relation,
+		   ProcessedIsAPatterns.Count
+    FROM ProcessedIsAPatterns
+         INNER JOIN
+             ConceptDict_IsAPatterns
+         ON ProcessedIsAPatterns.Source == ConceptDict_IsAPatterns.Concept;
+ProcessedIsAPatterns =
+    SELECT Target,
+           Source,
+           Relation,
+           SUM(Count) AS Count
+    FROM ProcessedIsAPatterns
+    GROUP BY Target,
+             Source,
+             Relation;
+		 
+Stat_IsAPatterns =
+    SELECT SUM(Count) AS Num_of_Output_Open_Similes
+    FROM ProcessedIsAPatterns;
+OUTPUT Stat_IsAPatterns
+TO SSTREAM @Stat_IsAPatternPath;
+
+		   
+//Hypernym Pattern
+ProcessedHypernymPatterns =
+    PROCESS Probase
+    USING RelationProcessor("hypernym");
+//for concept dict begin
+ConceptDict_HypernymPatterns =
+    SELECT Target AS Concept,
+           SUM(Count) AS ConceptCount
+    FROM ProcessedHypernymPatterns
+    GROUP BY Concept
+    UNION ALL
+    SELECT Source AS Concept,
+           SUM(Count) AS ConceptCount
+    FROM ProcessedHypernymPatterns
+    GROUP BY Concept;
+ConceptDict_HypernymPatterns =
+    SELECT Concept,
+           SUM(ConceptCount) AS ConceptCount
+    FROM ConceptDict_HypernymPatterns
+    GROUP BY Concept;
+ConceptDict_HypernymPatterns =
+    SELECT *
+    FROM ConceptDict_HypernymPatterns
+    WHERE ConceptCount > 50;
+OverallConceptDict =
+    SELECT *
+    FROM OverallConceptDict
+    UNION ALL
+    SELECT *
+    FROM ConceptDict_HypernymPatterns;
+OverallConceptDict =
+    SELECT Concept,
+           SUM(ConceptCount) AS ConceptCount
+    FROM OverallConceptDict
+    GROUP BY Concept
+    ORDER BY ConceptCount DESC;
+OUTPUT OverallConceptDict
+TO @@ConceptDict@@
+USING DefaultTextOutputter();
+//for concept dict end
+
+ProcessedHypernymPatterns =
+    SELECT ProcessedHypernymPatterns.Source,
+		   ProcessedHypernymPatterns.Target,
+		   ProcessedHypernymPatterns.Relation,
+		   ProcessedHypernymPatterns.Count
+    FROM ProcessedHypernymPatterns
+         INNER JOIN
+             ConceptDict_HypernymPatterns
+         ON ProcessedHypernymPatterns.Target == ConceptDict_HypernymPatterns.Concept;
+ProcessedHypernymPatterns =
+    SELECT ProcessedHypernymPatterns.Source,
+		   ProcessedHypernymPatterns.Target,
+		   ProcessedHypernymPatterns.Relation,
+		   ProcessedHypernymPatterns.Count
+    FROM ProcessedHypernymPatterns
+         INNER JOIN
+             ConceptDict_HypernymPatterns
+         ON ProcessedHypernymPatterns.Source == ConceptDict_HypernymPatterns.Concept;
+ProcessedHypernymPatterns =
+    SELECT Target,
+           Source,
+           Relation,
+           SUM(Count) AS Count
+    FROM ProcessedHypernymPatterns
+    GROUP BY Target,
+             Source,
+             Relation;
+			 
+Stat_HypernymPatterns =
+    SELECT SUM(Count) AS Num_of_Output_Open_Similes
+    FROM ProcessedHypernymPatterns;
+OUTPUT Stat_HypernymPatterns
+TO SSTREAM @Stat_HypernymPatternPath;
+
+TripleResult =
+    SELECT *
+    FROM ProcessedClosedSimiles
+    UNION ALL
+    SELECT *
+    FROM ProcessedOpenSimiles
+    UNION ALL
+    SELECT *
+    FROM ProcessedHypernymPatterns
+    UNION ALL
+    SELECT *
+    FROM ProcessedIsAPatterns;
+OUTPUT TripleResult
+TO SSTREAM @TriplePath;
