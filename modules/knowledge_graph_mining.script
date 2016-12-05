@@ -12,6 +12,8 @@
 #DECLARE Stat_IsAPatternPath string = @@Stat_IsAPatternPath@@;
 #DECLARE Stat_HypernymPatternPath string = @@Stat_ProbasePath@@;
 
+#DECLARE SimilesThreshold int = @@Similes_Threshold@@;
+#DECLARE OthersThreshold int = @@Others_Threshold@@;
 
 
 //Input data
@@ -44,7 +46,7 @@ RelationCount =
     SELECT Relation,
            RelationCount
     FROM RelationCount
-    WHERE RelationCount < 925 && RelationCount > 2;
+    WHERE RelationCount < 925 && RelationCount > @SimilesThreshold;
 RelationCount =
     SELECT Relation,
            RelationCount
@@ -73,7 +75,7 @@ ConceptDict_ClosedSimiles =
 ConceptDict_ClosedSimiles =
     SELECT *
     FROM ConceptDict_ClosedSimiles
-    WHERE ConceptCount > 2;
+    WHERE ConceptCount > @SimilesThreshold;
 //for concept dict end
 
 ProcessedClosedSimiles =
@@ -112,9 +114,10 @@ ProcessedClosedSimiles =
     GROUP BY Target,
              Source,
              Relation;
-		 
+
 Stat_ClosedSimiles =
-    SELECT SUM(Count) AS Num_of_Output_Closed_Similes
+    SELECT SUM(Count) AS Num_of_Output_Closed_Similes,
+           COUNT( * ) AS Distinct_Closed_Similes
     FROM ProcessedClosedSimiles;
 OUTPUT Stat_ClosedSimiles
 TO SSTREAM @Stat_ClosedSimilesPath;
@@ -146,7 +149,7 @@ ConceptDict_OpenSimiles =
 ConceptDict_OpenSimiles =
     SELECT *
     FROM ConceptDict_OpenSimiles
-    WHERE ConceptCount > 2;
+    WHERE ConceptCount > @SimilesThreshold;
 OverallConceptDict =
     SELECT *
     FROM ConceptDict_ClosedSimiles
@@ -188,7 +191,8 @@ ProcessedOpenSimiles =
              Source,
              Relation;
 Stat_OpenSimiles =
-    SELECT SUM(Count) AS Num_of_Output_Open_Similes
+    SELECT SUM(Count) AS Num_of_Output_Open_Similes,
+           COUNT( * ) AS Distinct_Open_Similes
     FROM ProcessedOpenSimiles;
 OUTPUT Stat_OpenSimiles
 TO SSTREAM @Stat_OpenSimilesPath;
@@ -218,7 +222,7 @@ ConceptDict_IsAPatterns =
 ConceptDict_IsAPatterns =
     SELECT *
     FROM ConceptDict_IsAPatterns
-    WHERE ConceptCount > 50;
+    WHERE ConceptCount > @OthersThreshold;
 OverallConceptDict =
     SELECT *
     FROM OverallConceptDict
@@ -239,8 +243,8 @@ ProcessedIsAPatterns =
 		   ProcessedIsAPatterns.Count
     FROM ProcessedIsAPatterns
          INNER JOIN
-             ConceptDict_IsAPatterns
-         ON ProcessedIsAPatterns.Target == ConceptDict_IsAPatterns.Concept;
+             OverallConceptDict
+         ON ProcessedIsAPatterns.Target == OverallConceptDict.Concept;
 ProcessedIsAPatterns =
     SELECT ProcessedIsAPatterns.Source,
 		   ProcessedIsAPatterns.Target,
@@ -248,8 +252,8 @@ ProcessedIsAPatterns =
 		   ProcessedIsAPatterns.Count
     FROM ProcessedIsAPatterns
          INNER JOIN
-             ConceptDict_IsAPatterns
-         ON ProcessedIsAPatterns.Source == ConceptDict_IsAPatterns.Concept;
+             OverallConceptDict
+         ON ProcessedIsAPatterns.Source == OverallConceptDict.Concept;
 ProcessedIsAPatterns =
     SELECT Target,
            Source,
@@ -259,9 +263,10 @@ ProcessedIsAPatterns =
     GROUP BY Target,
              Source,
              Relation;
-		 
+
 Stat_IsAPatterns =
-    SELECT SUM(Count) AS Num_of_Output_Open_Similes
+    SELECT SUM(Count) AS Num_of_Output_IsA_Patterns,
+           COUNT( * ) AS Distinct_IsA_Patterns
     FROM ProcessedIsAPatterns;
 OUTPUT Stat_IsAPatterns
 TO SSTREAM @Stat_IsAPatternPath;
@@ -290,7 +295,7 @@ ConceptDict_HypernymPatterns =
 ConceptDict_HypernymPatterns =
     SELECT *
     FROM ConceptDict_HypernymPatterns
-    WHERE ConceptCount > 50;
+    WHERE ConceptCount > @OthersThreshold;
 OverallConceptDict =
     SELECT *
     FROM OverallConceptDict
@@ -315,8 +320,8 @@ ProcessedHypernymPatterns =
 		   ProcessedHypernymPatterns.Count
     FROM ProcessedHypernymPatterns
          INNER JOIN
-             ConceptDict_HypernymPatterns
-         ON ProcessedHypernymPatterns.Target == ConceptDict_HypernymPatterns.Concept;
+             OverallConceptDict
+         ON ProcessedHypernymPatterns.Target == OverallConceptDict.Concept;
 ProcessedHypernymPatterns =
     SELECT ProcessedHypernymPatterns.Source,
 		   ProcessedHypernymPatterns.Target,
@@ -324,8 +329,8 @@ ProcessedHypernymPatterns =
 		   ProcessedHypernymPatterns.Count
     FROM ProcessedHypernymPatterns
          INNER JOIN
-             ConceptDict_HypernymPatterns
-         ON ProcessedHypernymPatterns.Source == ConceptDict_HypernymPatterns.Concept;
+             OverallConceptDict
+         ON ProcessedHypernymPatterns.Source == OverallConceptDict.Concept;
 ProcessedHypernymPatterns =
     SELECT Target,
            Source,
@@ -335,9 +340,10 @@ ProcessedHypernymPatterns =
     GROUP BY Target,
              Source,
              Relation;
-			 
+
 Stat_HypernymPatterns =
-    SELECT SUM(Count) AS Num_of_Output_Open_Similes
+    SELECT SUM(Count) AS Num_of_Output_Hypernym_Patterns,
+           COUNT( * ) AS Distinct_Hypernym_Patterns
     FROM ProcessedHypernymPatterns;
 OUTPUT Stat_HypernymPatterns
 TO SSTREAM @Stat_HypernymPatternPath;
@@ -356,3 +362,10 @@ TripleResult =
     FROM ProcessedIsAPatterns;
 OUTPUT TripleResult
 TO SSTREAM @TriplePath;
+	
+StatTriple =
+    SELECT COUNT( * ) AS TripleCount,
+           SUM(Count) AS EdgeCount
+    FROM TripleResult;
+OUTPUT StatTriple
+TO SSTREAM @@Stat_Triple@@;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using ScopeRuntime;
+using StringNormalization;
 
 using Newtonsoft.Json;
 
@@ -17,6 +18,15 @@ public class RelationProcessor : Processor
 		output.Add(new ColumnInfo("Relation", ColumnDataType.String));
 		output.Add(new ColumnInfo("Count", ColumnDataType.Integer));
 		return output;
+	}
+	bool HasAlphaBet(string word)
+	{
+		for (int i = 0; i < word.Length; i++)
+			if (word[i] >= 'a' && word[i] <= 'z')
+			{
+				return true;
+			}
+		return false;
 	}
 	public override IEnumerable<Row> Process(RowSet input, Row outputRow, string[] args)
 	{
@@ -39,10 +49,22 @@ public class RelationProcessor : Processor
 		 */
 		foreach (Row row in input.Rows)
 		{
-			string target = row["Left"].String.ToLower();
-			string source = row["Right"].String.ToLower();
-			outputRow["Target"].Set(target);
-			outputRow["Source"].Set(source);
+			string target = StringNormalization.StringNormalization.MediateNormalization(row["Left"].String.ToLower());
+			string source = StringNormalization.StringNormalization.MediateNormalization(row["Right"].String.ToLower());
+			if (!HasAlphaBet(target) || !HasAlphaBet(source))
+			{
+				continue;
+			}
+			if (type == "hypernym")
+			{
+				outputRow["Target"].Set(source);
+				outputRow["Source"].Set(target);
+			}
+			else
+			{
+				outputRow["Target"].Set(target);
+				outputRow["Source"].Set(source);
+			}
 			switch (type)
 			{
 				case "closed_similes":

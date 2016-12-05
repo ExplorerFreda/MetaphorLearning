@@ -50,7 +50,8 @@
     </Script>
     <Script Include="knowledge_graph_mining.script">
       <RemoveUselessParameters>False</RemoveUselessParameters>
-      <ScopeOldParameters>ClosedSimiles=(@\"D:\Metaphors\data\EACLData\closed_similes.ss\"),OpenSimiles=(@\"D:\Metaphors\data\EACLData\open_similes.ss\"),IsAPattern=(@\"D:\Metaphors\data\EACLData\isA_pattern.ss\"),Probase=(@\"D:\Metaphors\data\EACLData\Isa_Core_201602.tsv\"),TriplePath=(@\"D:\Metaphors\data\EACLData\triple.ss\"),Stat_ClosedSimilesPath=(@\"D:\Metaphors\data\EACLData\Stat_closedsimiles.ss\"),Stat_OpenSimilesPath=(@\"D:\Metaphors\data\EACLData\Stat_opensimiles.ss\"),Stat_IsAPatternPath=(@\"D:\Metaphors\data\EACLData\Stat_isapattern.ss\"),Stat_ProbasePath=(@\"D:\Metaphors\data\EACLData\Stat_Probase.ss\"),RelationCountPath=(@\"D:\Metaphors\data\EACLData\Relation_Count.ss\"),ConceptDict=(@\"D:\Metaphors\data\EACLData\Concept_Dict.ss\")</ScopeOldParameters>
+      <ScopeOldParameters>ClosedSimiles=(@\"D:\Metaphors\data\EACLData\closed_similes.ss\"),OpenSimiles=(@\"D:\Metaphors\data\EACLData\open_similes.ss\"),IsAPattern=(@\"D:\Metaphors\data\EACLData\isA_pattern.ss\"),Probase=(@\"D:\Metaphors\data\EACLData\Isa_Core_201602.tsv\"),TriplePath=(@\"D:\Metaphors\data\EACLData\triple.ss\"),Stat_ClosedSimilesPath=(@\"D:\Metaphors\data\EACLData\Stat_closedsimiles.ss\"),Stat_OpenSimilesPath=(@\"D:\Metaphors\data\EACLData\Stat_opensimiles.ss\"),Stat_IsAPatternPath=(@\"D:\Metaphors\data\EACLData\Stat_isapattern.ss\"),Stat_ProbasePath=(@\"D:\Metaphors\data\EACLData\Stat_Probase.ss\"),Similes_Threshold=(1),Others_Threshold=(50),RelationCountPath=(@\"D:\Metaphors\data\EACLData\Relation_Count.txt\"),ConceptDict=(@\"D:\Metaphors\data\EACLData\Concept_Dict.txt\"),Stat_Triple=(@\"D:\Metaphors\data\EACLData\Stat_Triple.ss\")</ScopeOldParameters>
+      <ScopeClusterParameters>ClosedSimiles=(@\"/my/Metaphors/closed_similes.ss\"),OpenSimiles=(@\"/my/Metaphors/open_similes.ss\"),IsAPattern=(@\"/my/Metaphors/isA_pattern.ss\"),Probase=(@\"/my/Metaphors/Isa_Core_201602.tsv\"),TriplePath=(@\"/my/Metaphors/triple_2_50.ss\"),Stat_ClosedSimilesPath=(@\"/my/Metaphors/Stat_closedsimiles_2_50.ss\"),Stat_OpenSimilesPath=(@\"/my/Metaphors/Stat_opensimiles_2_50.ss\"),Stat_IsAPatternPath=(@\"/my/Metaphors/Stat_isapattern_2_50.ss\"),Stat_ProbasePath=(@\"/my/Metaphors/Stat_Probase.ss_2_50.ss\"),Similes_Threshold=(2),Others_Threshold=(50),RelationCountPath=(@\"/my/Metaphors/Relation_Count_2_50.ss\"),ConceptDict=(@\"/my/Metaphors/Concept_Dict_2_50.ss\"),Stat_Triple=(@\"/my/Metaphors/Stat_Triple_2_50.ss\")</ScopeClusterParameters>
     </Script>
     <Script Include="linguistic-level_metaphor_pair_reduction.script">
       <RemoveUselessParameters>False</RemoveUselessParameters>
@@ -307,6 +308,18 @@
       <Name>Newtonsoft.Json</Name>
       <AssemblyName>Newtonsoft.Json.dll</AssemblyName>
       <HintPath>..\..\..\Json50r6\Bin\Net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OpenNLPInterface">
+      <Name>OpenNLPInterface</Name>
+      <AssemblyName>OpenNLPInterface.dll</AssemblyName>
+      <HintPath>..\dlls\OpenNLPInterface.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="StringNormalization">
+      <Name>StringNormalization</Name>
+      <AssemblyName>StringNormalization.dll</AssemblyName>
+      <HintPath>..\dlls\StringNormalization.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
